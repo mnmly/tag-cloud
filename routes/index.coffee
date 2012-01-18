@@ -1,0 +1,87 @@
+#phraser = require('./lib/phrasar')
+twitter = require('ntwitter')
+mecab = require('./../node_modules/node-mecab')
+
+exports.index = (req, res) ->
+  res.render "index"
+
+twit = new twitter
+  consumar_key: "79DmvBwydqEd5PfqZkOVg"
+  consumer_secret: 'VfhqcffJJa4Gic12CAO4sbs9gOs9dX4FeHIrSMJRUvE'
+  access_token_key: '15055740-dpoGKeXm5rqRQN2LOA9GqbVhuaMV7TFEWCMCRiyj4'
+  access_token_secret: '7D6clBZQf2UDF6Os4aoWqoOPvZ5pSqtMeYdr6F8'
+
+cache = []
+exports.fetch = (req, res) ->
+  
+  if cache.length > 0
+
+    return res.send cache
+
+  if req.query.n?
+    twitterParams =
+      screen_name: req.query.n
+      exclude_replies: true
+      include_rts: no
+      count: 200
+      include_entities: no
+      contributor_details: no
+  else
+    res.send
+      msg: "n is required"
+  
+  twit.getUserTimeline twitterParams, (err, data1) ->
+    throw err if err
+    twitterParams.since_id = data1[data1.length - 1].id
+      
+    twit.getUserTimeline twitterParams, (err, data2)->
+      throw err if err
+
+      data = data1.concat(data2)
+      tweets = ( t.text for t in data ).join(', ')
+      tweets = tweets
+        .replace(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi, '' )
+        .replace(/\//gi, ' ')
+        .replace(/\#\w+/gi, ' ')
+        .replace(/RT\s@[\w\-\_\d]+\s?\:?/gi, ' ')
+        .replace(/^via/gi, ' ')
+        .replace(/\@\w+/gi, ' ')
+        .replace(/\-/gi, ' ')
+
+      elements = mecab.parse tweets
+      elementStore = []
+      for el in elements
+        if el[1] is '名詞'
+          if elementStore[el[0]]?
+            elementStore[el[0]]++
+          else
+            elementStore[el[0]] = 1
+      
+      store = []
+      for noun, count of elementStore
+        
+        if count > 1 and not ( noun in ['の', 'ゆ', 'ら'] )
+          store.push [ noun, count ]
+      
+      store.sort (a, b)->
+        a[1] > b[1]
+
+      store.reverse()
+      
+      defScale = (count, mincount, maxcount, minsize, maxsize)->
+        return ( 0.5 + minsize + Math.pow( (maxsize - minsize) * ( count * 1.3 / ( maxcount - mincount )), 0.98 ) ) | 0
+      
+      tags = []
+      maxcount = store[0][1]
+      mincount = store[store.length - 1][1]
+      minsize=1
+      maxsize=36
+      for tagItem in store.splice(0, 300)
+        tags.push
+          tag: tagItem[0]
+          size: defScale( tagItem[1], mincount, maxcount, minsize, maxsize )
+
+      cache = tags
+      res.send tags
+
+#console.log phraser(sentence)

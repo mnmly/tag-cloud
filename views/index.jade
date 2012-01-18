@@ -1,0 +1,33 @@
+
+div.icon-wrapper#icon-twitter.
+  <?xml version="1.0" encoding="utf-8"?>
+  <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="18px" height="18px" viewBox="142.5 315.5 18 18" enable-background="new 142.5 315.5 18 18" xml:space="preserve">
+    <path id="path25" fill="#666666" d="M160.5,324.02c-0.633,0.108-1.553-0.005-2.039-0.208
+      c1.012-0.082,1.696-0.542,1.96-1.166c-0.365,0.223-1.497,0.469-2.121,0.234c-0.031-0.146-0.064-0.287-0.1-0.413
+      c-0.475-1.749-2.106-3.161-3.814-2.99c0.138-0.057,0.277-0.108,0.419-0.155c0.186-0.067,1.291-0.247,1.118-0.637
+      c-0.148-0.343-1.497,0.258-1.75,0.337c0.335-0.126,0.891-0.343,0.949-0.727c-0.514,0.07-1.018,0.313-1.406,0.665
+      c0.141-0.151,0.248-0.334,0.27-0.533c-1.37,0.876-2.169,2.64-2.817,4.354c-0.508-0.492-0.959-0.882-1.364-1.099
+      c-1.134-0.606-2.49-1.242-4.619-2.033c-0.064,0.704,0.349,1.644,1.54,2.265c-0.258-0.035-0.729,0.044-1.106,0.133
+      c0.152,0.809,0.655,1.474,2.014,1.795c-0.621,0.041-0.942,0.185-1.233,0.487c0.283,0.562,0.974,1.224,2.216,1.087
+      c-1.381,0.597-0.564,1.701,0.561,1.535c-1.917,1.983-4.941,1.836-6.677,0.179c4.532,6.182,14.385,3.656,15.853-2.298
+      C159.453,324.84,160.099,324.45,160.5,324.02L160.5,324.02z"/>
+  </svg>
+
+form#twitter-form(action='/fetch', type="get")
+  .field-wrapper
+    label(for='screen-name') @twitter
+    input#screen-name(type='text', name="screen-name")
+  
+  .button-wrapper
+    .icon-wrapper.
+     <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" width="70px" height="70px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" space="preserve">
+        <polygon fill="#000000" points="80.562,41.754 52.861,41.754 67.299,0 19.437,58.247 47.14,58.247 32.702,100 "></polygon>
+      </svg>
+    input(type='submit', value="")
+
+  .loader
+    canvas#loader(width=30, height=30)
+    p Loading tweets...
+
+#stage
