@@ -3,7 +3,7 @@ define ['Rect'], (Rect)->
     count = 0
     leftMost = 0
     topMost = 0
-    constructor: (@tag, @size, @rotation, @fontName = "AXIS Std", @fontZoom = 2)->
+    constructor: (@tag, @size, @rotation, @fontName = "AXIS Std", @fontZoom = 3)->
       if count++ is 0
         Tag.stage = document.getElementById('stage')
         Tag.hitTestCanvas = document.getElementById('hit-test')

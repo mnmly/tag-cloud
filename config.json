@@ -1,0 +1,12 @@
+{
+  "development" : {
+    "mongo_uri": "mongodb://localhost/tagcloud-dev"
+  },
+  "staging" : {
+    "mongo_uri": "mongodb://localhost/tagcloud-staging"
+  },
+  "production" : {
+    "mongo_uri": "mongodb://localhost/tagcloud-production"
+  }
+}
+

@@ -1,6 +1,7 @@
 #phraser = require('./lib/phrasar')
 twitter = require('ntwitter')
 mecab = require('./../node_modules/node-mecab')
+Tweets = require('./../models/Tweets')
 
 exports.index = (req, res) ->
   res.render "index"
@@ -12,29 +13,26 @@ twit = new twitter
   access_token_secret: '7D6clBZQf2UDF6Os4aoWqoOPvZ5pSqtMeYdr6F8'
 
 cache = []
-exports.fetch = (req, res) ->
-  
-  if cache.length > 0
 
-    return res.send cache
 
-  if req.query.n?
-    twitterParams =
-      screen_name: req.query.n
-      exclude_replies: true
-      include_rts: no
-      count: 200
-      include_entities: no
-      contributor_details: no
-  else
-    res.send
-      msg: "n is required"
-  
+startFetching = (res, screenName, instance)->
+
+  twitterParams =
+    screen_name: screenName
+    exclude_replies: true
+    include_rts: no
+    count: 200
+    include_entities: no
+    contributor_details: no
+
   twit.getUserTimeline twitterParams, (err, data1) ->
+
     return res.send err  if err
+
     twitterParams.since_id = data1[data1.length - 1].id
       
     twit.getUserTimeline twitterParams, (err, data2)->
+
       return res.send err  if err
 
       data = data1.concat(data2)
@@ -50,6 +48,7 @@ exports.fetch = (req, res) ->
 
       elements = mecab.parse tweets
       elementStore = []
+
       for el in elements
         if el[1] is '名詞'
           if elementStore[el[0]]?
@@ -74,14 +73,43 @@ exports.fetch = (req, res) ->
       tags = []
       maxcount = store[0][1]
       mincount = store[store.length - 1][1]
-      minsize=1
-      maxsize=36
+      minsize = 1
+      maxsize = 36
+
       for tagItem in store.splice(0, 300)
-        tags.push
+        instance.tags.push
           tag: tagItem[0]
           size: defScale( tagItem[1], mincount, maxcount, minsize, maxsize )
+          count: tagItem[1]
 
-      cache = tags
-      res.send tags
+      instance.save ->
+        res.send instance.tags
+
+  
+exports.fetch = (req, res) ->
+  unless req.query.n?
+    res.send
+      msg: "n is required"
+  else
+    screenName = req.query.n
+    Tweets.findOne {screenName: screenName}, (err, tweets)->
+      if tweets?
+        isTweetExists = yes
+        timeDiff = new Date() - tweets.updatedAt
+        daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+        # Go to twittter if it is below 7 days
+        #
+        if tweets.tags.length is 0
+          return startFetching(res, screenName, tweets)
+
+        if daysDiff < 7
+          res.send tweets.tags
+        else
+          return startFetching(res, screenName, tweets)
+      else
+        tweets = new Tweets()
+        tweets.screenName = screenName
+        tweets.save ->
+          startFetching(res, screenName, tweets)
 
 #console.log phraser(sentence)

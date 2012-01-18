@@ -27,8 +27,8 @@ define [ "TagCloud" ], (TagCloud)->
             console.log data
             startFetching()
           else
-            $container.removeClass 'fetching'
             $container.addClass 'view'
+            $container.removeClass 'fetching'
             $("#icon-twitter").wrapAll("<div id='screen-name-container'/>")
             $("#screen-name-container").append "<span>@#{$screenNameField.val().replace('@','')}</span>"
             setTimeout =>

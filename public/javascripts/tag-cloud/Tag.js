@@ -16,7 +16,7 @@
         this.size = size;
         this.rotation = rotation;
         this.fontName = fontName != null ? fontName : "AXIS Std";
-        this.fontZoom = fontZoom != null ? fontZoom : 2;
+        this.fontZoom = fontZoom != null ? fontZoom : 3;
         if (count++ === 0) {
           Tag.stage = document.getElementById('stage');
           Tag.hitTestCanvas = document.getElementById('hit-test');

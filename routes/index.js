@@ -1,9 +1,11 @@
 (function() {
-  var cache, mecab, twit, twitter;
+  var Tweets, cache, mecab, startFetching, twit, twitter;
 
   twitter = require('ntwitter');
 
   mecab = require('./../node_modules/node-mecab');
+
+  Tweets = require('./../models/Tweets');
 
   exports.index = function(req, res) {
     return res.render("index");
@@ -18,23 +20,16 @@
 
   cache = [];
 
-  exports.fetch = function(req, res) {
+  startFetching = function(res, screenName, instance) {
     var twitterParams;
-    if (cache.length > 0) return res.send(cache);
-    if (req.query.n != null) {
-      twitterParams = {
-        screen_name: req.query.n,
-        exclude_replies: true,
-        include_rts: false,
-        count: 200,
-        include_entities: false,
-        contributor_details: false
-      };
-    } else {
-      res.send({
-        msg: "n is required"
-      });
-    }
+    twitterParams = {
+      screen_name: screenName,
+      exclude_replies: true,
+      include_rts: false,
+      count: 200,
+      include_entities: false,
+      contributor_details: false
+    };
     return twit.getUserTimeline(twitterParams, function(err, data1) {
       if (err) return res.send(err);
       twitterParams.since_id = data1[data1.length - 1].id;
@@ -86,15 +81,52 @@
         _ref = store.splice(0, 300);
         for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
           tagItem = _ref[_j];
-          tags.push({
+          instance.tags.push({
             tag: tagItem[0],
-            size: defScale(tagItem[1], mincount, maxcount, minsize, maxsize)
+            size: defScale(tagItem[1], mincount, maxcount, minsize, maxsize),
+            count: tagItem[1]
           });
         }
-        cache = tags;
-        return res.send(tags);
+        return instance.save(function() {
+          return res.send(instance.tags);
+        });
       });
     });
+  };
+
+  exports.fetch = function(req, res) {
+    var screenName;
+    if (req.query.n == null) {
+      return res.send({
+        msg: "n is required"
+      });
+    } else {
+      screenName = req.query.n;
+      return Tweets.findOne({
+        screenName: screenName
+      }, function(err, tweets) {
+        var daysDiff, isTweetExists, timeDiff;
+        if (tweets != null) {
+          isTweetExists = true;
+          timeDiff = new Date() - tweets.updatedAt;
+          daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+          if (tweets.tags.length === 0) {
+            return startFetching(res, screenName, tweets);
+          }
+          if (daysDiff < 7) {
+            return res.send(tweets.tags);
+          } else {
+            return startFetching(res, screenName, tweets);
+          }
+        } else {
+          tweets = new Tweets();
+          tweets.screenName = screenName;
+          return tweets.save(function() {
+            return startFetching(res, screenName, tweets);
+          });
+        }
+      });
+    }
   };
 
 }).call(this);

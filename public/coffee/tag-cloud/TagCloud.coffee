@@ -10,7 +10,7 @@ define ['Tag', 'Rect'], (Tag, Rect)->
 
     ECCENTRICITY = 1.8
     RADIUS = 1
-    RADIUS = 5
+    RADIUS = 7
     LOWER_START = 0.45
     UPPER_START = 0.55
     STEP_SIZE = 4 #relative to base step size of each spiral function
@@ -57,15 +57,15 @@ define ['Tag', 'Rect'], (Tag, Rect)->
 
     STEP_SIZE = 2 #relative to base step size of each spiral function
 
-    constructor: (tagList, layout)->
+    constructor: (tagList, layout, width = 500, height = 300)->
       canvas = document.createElement('canvas')
       canvas.style.position = 'absolute'
       canvas.setAttribute('id', 'hit-test')
       document.getElementById('stage').appendChild canvas
       #console.log tagList
-      @drawCloud(tagList, layout)
+      @drawCloud(tagList, layout, width, height)
 
-    drawCloud: (tagList, layout)->
+    drawCloud: (tagList, layout, width, height)->
       # Sort by tag length
       tagList.sort (a, b)->
         a.tag.length - b.tag.length
@@ -74,7 +74,7 @@ define ['Tag', 'Rect'], (Tag, Rect)->
       tagList.sort (a, b)->
         a.size - b.size
 
-      sizeRect = new Rect(0, 0, 500, 300)
+      sizeRect = new Rect(0, 0, width, height)
       tagList = tagList.reverse()
       tagStore = []
       rectangular = no
@@ -84,7 +84,8 @@ define ['Tag', 'Rect'], (Tag, Rect)->
         spiral = archimedeanSpiral
 
       i = 0
-      onLoopEnd = -> isLoopDone
+      isLoopDone = no
+      onLoopEnd = -> isLoopDone = yes
 
       iterationFn = (loopEntity)=>
         tag = tagList[i++]
