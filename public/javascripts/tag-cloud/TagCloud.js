@@ -18,7 +18,7 @@
 
       RADIUS = 1;
 
-      RADIUS = 5;
+      RADIUS = 7;
 
       LOWER_START = 0.45;
 
@@ -79,17 +79,19 @@
 
       STEP_SIZE = 2;
 
-      function TagCloud(tagList, layout) {
+      function TagCloud(tagList, layout, width, height) {
         var canvas;
+        if (width == null) width = 500;
+        if (height == null) height = 300;
         canvas = document.createElement('canvas');
         canvas.style.position = 'absolute';
         canvas.setAttribute('id', 'hit-test');
         document.getElementById('stage').appendChild(canvas);
-        this.drawCloud(tagList, layout);
+        this.drawCloud(tagList, layout, width, height);
       }
 
-      TagCloud.prototype.drawCloud = function(tagList, layout) {
-        var i, iterationFn, onLoopEnd, rectangular, sizeRect, spiral, tagStore;
+      TagCloud.prototype.drawCloud = function(tagList, layout, width, height) {
+        var i, isLoopDone, iterationFn, onLoopEnd, rectangular, sizeRect, spiral, tagStore;
         var _this = this;
         tagList.sort(function(a, b) {
           return a.tag.length - b.tag.length;
@@ -97,7 +99,7 @@
         tagList.sort(function(a, b) {
           return a.size - b.size;
         });
-        sizeRect = new Rect(0, 0, 500, 300);
+        sizeRect = new Rect(0, 0, width, height);
         tagList = tagList.reverse();
         tagStore = [];
         rectangular = false;
@@ -107,8 +109,9 @@
           spiral = archimedeanSpiral;
         }
         i = 0;
+        isLoopDone = false;
         onLoopEnd = function() {
-          return isLoopDone;
+          return isLoopDone = true;
         };
         iterationFn = function(loopEntity) {
           var currentTag, flip, rot, tag, x, y;
