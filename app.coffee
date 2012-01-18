@@ -41,6 +41,6 @@ app.configure "production", ->
 app.get "/", routes.index
 app.get "/fetch", routes.fetch
 
-app.listen 4000
+app.listen 4010
 console.log "Express server listening on port %d in %s mode", app.address().port, app.settings.env
 
