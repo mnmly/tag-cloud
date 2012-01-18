@@ -4,7 +4,7 @@
     return App = (function() {
 
       function App() {
-        var $container, $screenNameField;
+        var $container, $screenNameField, startFetching;
         $container = $(".container");
         $screenNameField = $("#screen-name");
         $screenNameField.focus(function() {
@@ -24,30 +24,37 @@
             return $container.addClass('ready');
           }
         });
-        $("#twitter-form").submit(function(e) {
+        startFetching = function() {
           var $jqXHR;
-          console.log(e);
-          e.preventDefault();
-          $container.removeClass('ready');
-          $container.addClass('fetching');
           $jqXHR = $.ajax({
             url: "/fetch?n=" + ($screenNameField.val().replace('@', ''))
           });
           $jqXHR.success(function(data) {
             var tagCloud;
             var _this = this;
-            $container.removeClass('fetching');
-            $container.addClass('view');
-            $("#icon-twitter").wrapAll("<div id='screen-name-container'/>");
-            $("#screen-name-container").append("<span>@" + ($screenNameField.val().replace('@', '')) + "</span>");
-            setTimeout(function() {
-              return $screenNameField.parents('form').remove();
-            }, 500);
-            return tagCloud = new TagCloud(data, 4);
+            if (data.statusCode != null) {
+              console.log(data);
+              return startFetching();
+            } else {
+              $container.removeClass('fetching');
+              $container.addClass('view');
+              $("#icon-twitter").wrapAll("<div id='screen-name-container'/>");
+              $("#screen-name-container").append("<span>@" + ($screenNameField.val().replace('@', '')) + "</span>");
+              setTimeout(function() {
+                return $screenNameField.parents('form').remove();
+              }, 500);
+              return tagCloud = new TagCloud(data, 4);
+            }
           });
           return $jqXHR.error(function(data) {
             return console.log(arguments);
           });
+        };
+        $("#twitter-form").submit(function(e) {
+          e.preventDefault();
+          $container.removeClass('ready');
+          $container.addClass('fetching');
+          return startFetching();
         });
       }
 
