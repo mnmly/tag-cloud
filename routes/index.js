@@ -36,11 +36,11 @@
       });
     }
     return twit.getUserTimeline(twitterParams, function(err, data1) {
-      if (err) throw err;
+      if (err) return res.send(err);
       twitterParams.since_id = data1[data1.length - 1].id;
       return twit.getUserTimeline(twitterParams, function(err, data2) {
         var count, data, defScale, el, elementStore, elements, maxcount, maxsize, mincount, minsize, noun, store, t, tagItem, tags, tweets, _i, _j, _len, _len2, _ref;
-        if (err) throw err;
+        if (err) return res.send(err);
         data = data1.concat(data2);
         tweets = ((function() {
           var _i, _len, _results;

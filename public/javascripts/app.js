@@ -25,11 +25,15 @@
           }
         });
         $("#twitter-form").submit(function(e) {
+          var $jqXHR;
           console.log(e);
           e.preventDefault();
           $container.removeClass('ready');
           $container.addClass('fetching');
-          return $.getJSON("/fetch?n=" + ($screenNameField.val().replace('@', '')), function(data) {
+          $jqXHR = $.ajax({
+            url: "/fetch?n=" + ($screenNameField.val().replace('@', ''))
+          });
+          $jqXHR.success(function(data) {
             var tagCloud;
             var _this = this;
             $container.removeClass('fetching');
@@ -40,6 +44,9 @@
               return $screenNameField.parents('form').remove();
             }, 500);
             return tagCloud = new TagCloud(data, 4);
+          });
+          return $jqXHR.error(function(data) {
+            return console.log(arguments);
           });
         });
       }

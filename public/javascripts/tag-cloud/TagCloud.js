@@ -97,7 +97,7 @@
         tagList.sort(function(a, b) {
           return a.size - b.size;
         });
-        sizeRect = new Rect(0, 0, 880, 300);
+        sizeRect = new Rect(0, 0, 500, 300);
         tagList = tagList.reverse();
         tagStore = [];
         rectangular = false;

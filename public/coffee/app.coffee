@@ -26,8 +26,9 @@ define [ "TagCloud" ], (TagCloud)->
 
         $container.removeClass 'ready'
         $container.addClass 'fetching'
-
-        $.getJSON "/fetch?n=#{$screenNameField.val().replace('@','')}", (data)->
+        
+        $jqXHR = $.ajax url: "/fetch?n=#{$screenNameField.val().replace('@','')}"
+        $jqXHR.success (data)->
           $container.removeClass 'fetching'
           $container.addClass 'view'
           $("#icon-twitter").wrapAll("<div id='screen-name-container'/>")
@@ -36,4 +37,8 @@ define [ "TagCloud" ], (TagCloud)->
             $screenNameField.parents('form').remove()
           , 500
           tagCloud = new TagCloud data, 4
+        
+        $jqXHR.error (data)->
+          console.log arguments
+          
 

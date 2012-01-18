@@ -4,6 +4,7 @@ stylus = require('stylus')
 nib = require('nib')
 
 app = module.exports = express.createServer()
+auth = express.basicAuth 'd', 'nonono'
 
 allowCrossDomain = (req, res, next) ->
   res.header "Access-Control-Allow-Origin", "http://localhost:3000"
@@ -38,7 +39,7 @@ app.configure "development", ->
 app.configure "production", ->
   app.use express.errorHandler()
 
-app.get "/", routes.index
+app.get "/", auth, routes.index
 app.get "/fetch", routes.fetch
 
 app.listen 4010

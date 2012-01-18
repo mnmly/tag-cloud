@@ -1,5 +1,5 @@
 (function() {
-  var allowCrossDomain, app, compile, express, nib, routes, stylus;
+  var allowCrossDomain, app, auth, compile, express, nib, routes, stylus;
 
   express = require("express");
 
@@ -10,6 +10,8 @@
   nib = require('nib');
 
   app = module.exports = express.createServer();
+
+  auth = express.basicAuth('d', 'nonono');
 
   allowCrossDomain = function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
@@ -47,7 +49,7 @@
     return app.use(express.errorHandler());
   });
 
-  app.get("/", routes.index);
+  app.get("/", auth, routes.index);
 
   app.get("/fetch", routes.fetch);
 

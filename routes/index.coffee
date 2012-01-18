@@ -31,11 +31,11 @@ exports.fetch = (req, res) ->
       msg: "n is required"
   
   twit.getUserTimeline twitterParams, (err, data1) ->
-    throw err if err
+    return res.send err  if err
     twitterParams.since_id = data1[data1.length - 1].id
       
     twit.getUserTimeline twitterParams, (err, data2)->
-      throw err if err
+      return res.send err  if err
 
       data = data1.concat(data2)
       tweets = ( t.text for t in data ).join(', ')
