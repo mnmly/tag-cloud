@@ -16,7 +16,7 @@
     return Tweets.findOne({
       screenName: req.params.screenName.toLowerCase()
     }, function(err, tweets) {
-      if (tweets != null) {
+      if ((tweets != null) && tweets.tags.length > 0) {
         return res.render("index", {
           locals: {
             tweets: tweets.tags,
