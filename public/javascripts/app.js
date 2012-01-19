@@ -76,17 +76,17 @@
           e.preventDefault();
           $el = $("#view-mode");
           $el.toggleClass('normal-view');
-          if (!$el.hasClass('normal-view')) {
+          if ($el.hasClass('normal-view')) {
             $("#stage .tag").each(function() {
               var style;
               style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '');
-              return $(this).css('-webkit-transform', style);
+              return $(this).style('style', style);
             });
           } else {
             $("#stage .tag").each(function() {
               var style;
               style = $(this).attr('style').replace('translate3d', 'rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d');
-              return $(this).css('-webkit-transform', style);
+              return $(this).style('style', style);
             });
           }
           return $("#stage").toggleClass('normal-view');
@@ -121,7 +121,7 @@
           _this.isFontLoaded = false;
           return setTimeout(function() {
             return _this.kickoffTagCloud(fontName);
-          }, 1000);
+          }, 2000);
         });
       };
 
@@ -183,7 +183,7 @@
             $("#stage .tag").each(function() {
               var style;
               style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '');
-              return $(this).css('-webkit-transform', style);
+              return $(this).attr('style', style);
             });
             $("#view-mode").addClass('ready').addClass('normal-view');
             return $("#view-mode .arrow").delay(1000).fadeOut(1000, function() {
