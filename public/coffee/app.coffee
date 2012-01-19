@@ -63,14 +63,14 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         $el = $("#view-mode")
         $el.toggleClass 'normal-view'
 
-        unless $el.hasClass 'normal-view'
+        if $el.hasClass 'normal-view'
           $("#stage .tag").each ->
             style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '')
-            $(this).css('-webkit-transform', style)
+            $(this).style('style', style)
         else
           $("#stage .tag").each ->
             style = $(this).attr('style').replace('translate3d', 'rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d')
-            $(this).css('-webkit-transform', style)
+            $(this).style('style', style)
           
         $("#stage").toggleClass 'normal-view'
 
@@ -104,7 +104,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         @isFontLoaded = no
         setTimeout =>
           @kickoffTagCloud(fontName)
-        , 1000
+        , 2000
     
     startFetching: ->
       screenName = @screenNameField.val().replace('@', '')
@@ -151,7 +151,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
           $("#stage").addClass 'normal-view'
           $("#stage .tag").each ->
             style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '')
-            $(this).css('-webkit-transform', style)
+            $(this).attr('style', style)
 
           $("#view-mode").addClass('ready')
                             .addClass 'normal-view'
