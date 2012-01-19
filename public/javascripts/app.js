@@ -105,7 +105,10 @@
           return _this.startFetching();
         });
         return this.bind('onFontReady', function(fontName) {
-          return _this.kickoffTagCloud(fontName);
+          _this.isFontLoaded = false;
+          return setTimeout(function() {
+            return _this.kickoffTagCloud(fontName);
+          }, 500);
         });
       };
 

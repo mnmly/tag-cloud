@@ -105,6 +105,7 @@ define ['Rect'], (Rect)->
       setTimeout =>
         #Tag.stylesheet.innerHTML = rule
         @el.style.opacity = 1
+        @el.style.top = 0
         @el.className = 'tag ready'
       , 500
       #@el.style.webkitTransform = "translate3d(#{pos.left}px, #{pos.top}px, 0) #{if @rotation is 90 then "rotate(90deg)" else "" }"
