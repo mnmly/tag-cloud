@@ -1,5 +1,5 @@
 
-  define(["fontplus.utils", "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js", 'http://webfont.fontplus.jp/accessor/script/fontplus.js?DCe-AKxpbX0%3D'], function(FontPlusUtils) {
+  define(["fontplus.utils", "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js", 'http://webfont.fontplus.jp/accessor/script/fontplus.js?LyzUQoPX3yA%3D'], function(FontPlusUtils) {
     var FontPlusManager;
     return FontPlusManager = (function() {
 

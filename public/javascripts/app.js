@@ -1,7 +1,11 @@
+(function() {
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  define(["TagCloud", "LoadingWheel", "vendor/jquery.uniform.min"], function(TagCloud, LoadingWheel) {
+  define(["TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min"], function(TagCloud, LoadingWheel, Evented) {
     var App;
     return App = (function() {
+
+      __extends(App, Evented);
 
       App.prototype.saveTagData = function() {
         var $jqXHR, tagData;
@@ -35,6 +39,7 @@
 
       function App(tweetData) {
         if (tweetData == null) tweetData = null;
+        App.__super__.constructor.apply(this, arguments);
         this.setupTypeList();
         this.attachEvents();
         this.container = $(".container");
@@ -142,7 +147,9 @@
       };
 
       App.prototype.kickOffTagCloud = function(data, screenName) {
-        this.tagCloud = new TagCloud(data.splice(0, 100), 4, 500, 500, "AXIS Std");
+        data = data.splice(0, 100);
+        this.trigger('onFetchDone', data);
+        this.tagCloud = new TagCloud(data, 4, 500, 500, "AXIS Std");
         history.pushState({}, "TweetCloud | @" + screenName, "" + (screenName.toLowerCase()));
         return this.tagCloud.bind('onLoopEnd', function() {
           var _this = this;
@@ -213,3 +220,5 @@
 
     })();
   });
+
+}).call(this);

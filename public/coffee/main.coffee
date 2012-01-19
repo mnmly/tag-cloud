@@ -24,12 +24,20 @@ require [
       requestAnimFrame animloop
       app.loadingWheel.render(count++)
     )()
-  ###
-  require [ 'font-plus-manager' ], (FontPlusManager)->
-    console.log arguments
-    app.bind 'onFetchDone', (data)->
-      
-    fontPlusManger  = new FontPlusManager###
+  
+    require [
+       'fontplus.utils'
+       "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js"
+       'http://webfont.fontplus.jp/accessor/script/fontplus.js?LyzUQoPX3yA%3D'], (FontPlusUtils)->
+
+      app.bind 'onFetchDone', (data)->
+        fontPlusUtils  = new FontPlusUtils(WebFont)
+        text = (t.tag for t in data)
+        _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''))
+        fontPlusUtils.bind 'fontactive', (_uid, fontFamily, fontDescription, text)->
+          if _initial is _uid
+            console.log "Yay"
+        
 
 
 

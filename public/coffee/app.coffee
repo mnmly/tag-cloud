@@ -1,7 +1,7 @@
-define [ "TagCloud", "LoadingWheel", "vendor/jquery.uniform.min" ], (TagCloud, LoadingWheel)->
+define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (TagCloud, LoadingWheel, Evented)->
 
-  class App
-    
+  class App extends Evented
+      
     saveTagData: ->
       tagData = []
       $(".tag").each ->
@@ -27,6 +27,7 @@ define [ "TagCloud", "LoadingWheel", "vendor/jquery.uniform.min" ], (TagCloud, L
 
 
     constructor: (tweetData = null)->
+      super
       @setupTypeList()
       @attachEvents()
       @container = $(".container")
@@ -119,7 +120,9 @@ define [ "TagCloud", "LoadingWheel", "vendor/jquery.uniform.min" ], (TagCloud, L
       @container.prepend $nameContainer
 
     kickOffTagCloud: (data, screenName)->
-      @tagCloud = new TagCloud data.splice(0, 100), 4, 500, 500, "AXIS Std"
+      data = data.splice(0, 100)
+      @trigger('onFetchDone', data)
+      @tagCloud = new TagCloud data, 4, 500, 500, "AXIS Std"
       history.pushState({}, "TweetCloud | @#{screenName}", "#{screenName.toLowerCase()}")
       @tagCloud.bind 'onLoopEnd', ->
         setTimeout =>
