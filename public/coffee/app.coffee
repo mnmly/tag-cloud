@@ -131,6 +131,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
     prepareTagCloud: (data, screenName)->
       @data = data.splice(0, 100)
       @screenName = screenName
+      @trigger('onFetchDone', @data)
       @onLoopEndCallBack = ->
         setTimeout =>
           $("#stage").addClass 'normal-view'
