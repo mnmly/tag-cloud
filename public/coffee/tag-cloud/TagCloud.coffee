@@ -8,9 +8,9 @@ define ['Tag', 'Rect'], (Tag, Rect)->
     LAYOUT_MOST_VERTICAL = 3
     LAYOUT_MIX = 4
 
-    ECCENTRICITY = 1.8
+    ECCENTRICITY = 1.2
     RADIUS = 1
-    RADIUS = 7
+    RADIUS = 8
     LOWER_START = 0.45
     UPPER_START = 0.55
     STEP_SIZE = 4 #relative to base step size of each spiral function
@@ -57,15 +57,14 @@ define ['Tag', 'Rect'], (Tag, Rect)->
 
     STEP_SIZE = 2 #relative to base step size of each spiral function
 
-    constructor: (tagList, layout, width = 500, height = 300)->
+    constructor: (tagList, layout, width = 500, height = 300, fontName='Helvetica')->
       canvas = document.createElement('canvas')
       canvas.style.position = 'absolute'
       canvas.setAttribute('id', 'hit-test')
       document.getElementById('stage').appendChild canvas
-      #console.log tagList
-      @drawCloud(tagList, layout, width, height)
+      @drawCloud(tagList, layout, width, height, fontName)
 
-    drawCloud: (tagList, layout, width, height)->
+    drawCloud: (tagList, layout, width, height, fontName)->
       # Sort by tag length
       tagList.sort (a, b)->
         a.tag.length - b.tag.length
@@ -86,7 +85,8 @@ define ['Tag', 'Rect'], (Tag, Rect)->
       i = 0
       isLoopDone = no
       onLoopEnd = -> isLoopDone = yes
-
+      lastTop = 0
+      topMost = 0
       iterationFn = (loopEntity)=>
         tag = tagList[i++]
         rot = 0
@@ -101,7 +101,7 @@ define ['Tag', 'Rect'], (Tag, Rect)->
         else if layout is LAYOUT_MOST_HORIZONTAL
           flip = yes
         
-        currentTag = new Tag(tag.tag, tag.size, rot)
+        currentTag = new Tag(tag.tag, tag.size, rot, fontName)
 
         x = sizeRect.width - currentTag.rect.width
         if x < 0 then x = 0
@@ -112,22 +112,36 @@ define ['Tag', 'Rect'], (Tag, Rect)->
         if y < 0 then y = 0
         y = @randInt(y * LOWER_START, y * UPPER_START)
         currentTag.rect.top = y
-
+        
         @searchPlace(currentTag, tagStore, sizeRect, spiral, flip)
+        if topMost > currentTag.rect.top
+          while topMost - currentTag > 250
+            x = sizeRect.width - currentTag.rect.width
+            if x < 0 then x = 0
+            x = @randInt(x * LOWER_START, x * UPPER_START)
+            currentTag.rect.left = x
+
+            y = sizeRect.height - currentTag.rect.height
+            if y < 0 then y = 0
+            y = @randInt(y * LOWER_START, y * UPPER_START)
+            currentTag.rect.top = y
+            @searchPlace(currentTag, tagStore, sizeRect, spiral, flip)
+          topMost = currentTag.rect.top
+
         tagStore.push(currentTag)
-        # Throttling
         setTimeout ->
           stage = document.getElementById('stage')
           {top, left} = currentTag.update()
-          stage.style.marginTop = ( -top + 10 ) + "px"
+          if top < -550
+            currentTag.el.display = "none"
+            return loopEntity.next()
+          stage.style.marginTop = ( -top / 3 ) + "px"
+          stage.style.left = ( top / 2 ) + "px"
           loopEntity.next()
-        , 100
+        , 300
 
+      # Throttling
       @asyncLoop tagList.length, iterationFn, onLoopEnd
-
-      #while not isLoopDone
-      #1 + 1
-      #return tagStore
 
     doCollide: ( tag, tagStore )->
       if @lastCollisionHit? and tag.collideWith(@lastCollisionHit, true)
@@ -181,7 +195,7 @@ define ['Tag', 'Rect'], (Tag, Rect)->
         if sizeRect.contains(union)
           return union
       return sizeRect
-
+      
     randInt: (min, max)->
       0.5 + ( Math.random() * ( max - min ) + min ) | 0
 

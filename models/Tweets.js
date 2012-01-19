@@ -1,5 +1,5 @@
 (function() {
-  var Schema, Tag, Tweets, exports, mongoose;
+  var Schema, Tag, Tweets, mongoose;
 
   mongoose = require('./db_connect');
 
@@ -8,7 +8,16 @@
   Tag = new Schema({
     tag: String,
     size: Number,
-    count: Number
+    count: Number,
+    rect: {
+      top: Number,
+      left: Number,
+      rotation: Number,
+      width: Number,
+      height: Number,
+      fontFamily: String,
+      fontSize: Number
+    }
   });
 
   Tweets = new Schema({
@@ -23,6 +32,6 @@
     }
   });
 
-  exports = module.exports = mongoose.model("Tweets", Tweets);
+  exports.Tweets = module.exports.Tweets = mongoose.model("Tweets", Tweets);
 
 }).call(this);

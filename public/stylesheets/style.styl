@@ -1,11 +1,11 @@
 @import 'nib'
-
-
+*
+  -webkit-backface-visibility: hidden;
 
 body
-  background-image: url(../images/bg.png)
   font-family Helvetica Neue, Helvetica, sans-serif
   height: 100%
+  margin: 0
 
 input
   font-family Helvetica Neue, Helvetica, sans-serif
@@ -32,13 +32,77 @@ input-style()
 .container
   position: relative
   top: 50%
-  margin-top: -100px
+  margin-top: -150px
   transition: .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
-  -webkit-perspective: 800
+  -webkit-perspective: 1000
   -webkit-transform-style: preserve-3d
+  -webkit-transition: -webkit-transoform .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
 
+  &:target
+    -webkit-transform: rotateY(180deg)
+    .card
+      pointer-events: none
+    .front
+      opacity: 0
+      pointer-events: none
+
+    .back
+      opacity: 1
+      pointer-events: auto
+  
+  .card
+    -webkit-animation-name: bounceInDown
+    -webkit-animation-fill-mode: backwards
+    -webkit-animation-duration: 1s
+    -webkit-animation-delay: 1s
+    -webkit-transition: .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+    position: relative
+    width: 360px
+    height: 300px
+    margin: 0 auto
+    background-image: url("../images/bg.png")
+    border: 1px solid hsl(0, 0%, 80%)
+    box-shadow: 0 1px 5px hsla(0, 0%, 0%, .2)
+    border-radius: 3px
+    transition: top .3s
+    box-sizing: border-box
+    padding: 30px
+    padding-top: 75px
+
+    .icon-cog
+      position: absolute;
+      right: -70px;
+      top: 65px;
+      opacity: .6;
+
+      svg
+        width: 25px
+        height: 25px
+
+    .front
+      -webkit-transition: opacity .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+      
+    .back
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      -webkit-transition: opacity .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+      -webkit-transform: rotateY(180deg)
+      -webkit-backface-visibility: hidden;
+
+      ul
+        margin: 0
+        padding: 0
+        li
+          list-style: none
+          margin: 0
+          padding: 0
+      
   &.ready
     margin-top: -150px
+    .card
+      padding-top: 50px
     .button-wrapper
       transform rotate(0deg) scale(1)
 
@@ -59,15 +123,22 @@ input-style()
     margin-top: 0
     top: 0
     text-align: center
+    .card
+      opacity: 0
+      pointer-events: none
+
+    a[href="#settings"]
+      opacity: 0
+      pointer-events: none
     form
       opacity: 0
       pointer-events: none
     
     
   .button-wrapper
-    transform rotate(-540deg) scale(0.01)
-    transition-property: opacity, transform
-    transition-duration: .3s
+    transform rotate(-360deg) scale(0.01)
+    transition-property: opacity, -webkit-transform
+    transition-duration: 1s
 
 #twitter-form
   position: relative
@@ -108,7 +179,7 @@ input-style()
 
   .loader
     position: absolute
-    top: -10px
+    top: 20px
     left: 90px
     text-align center
     opacity: 0
@@ -183,32 +254,36 @@ screen-string()
   background: grey
   
 #screen-name-container
+  position: fixed
+  top: 10px
   text-align: center
-  position: relative
-  display: inline-block
-  padding: 5px 11px 5px 10px
-  background: hsla(0, 0%, 100%, 1)
-  border-radius: 3px
-  box-shadow: 0 6px 10px hsla(0, 0%, 0%, 0.1)
-  &::before
-    screen-string()
-    left: 15px
-  &::after
-    screen-string()
-    right: 15px
-
-  #icon-twitter
+  width: 100%
+  .inner
     display: inline-block
-    width: auto
-    margin-right: 5px
-    margin-bottom: 0
-    
-  span
+    padding: 5px 11px 5px 10px
+    background: hsla(0, 0%, 100%, 1)
+    border-radius: 3px
+    box-shadow: 0 6px 10px hsla(0, 0%, 0%, 0.1)
     position: relative
-    display: inline-block
-    top: -3px
-    font-weight: bold
-    color: hsl(0, 0%, 38%)
+    &::before
+      screen-string()
+      left: 15px
+    &::after
+      screen-string()
+      right: 15px
+
+    #icon-twitter
+      display: inline-block
+      width: auto
+      margin-right: 5px
+      margin-bottom: 0
+      
+    span
+      position: relative
+      display: inline-block
+      top: -3px
+      font-weight: bold
+      color: hsl(0, 0%, 38%)
 
 #stage
   -webkit-transition: .3s .1s cubic-bezier(0.860, 0.000, 0.070, 1.000)
@@ -217,22 +292,26 @@ screen-string()
   position: relative
   width: 500px
   margin: 0 auto
-  top: 100px
   .tag
     font-size: 30px
     font-weight: bold
     position: absolute
     font-family: 'AXIS Std'
     font-weight: 900
-    opacity: 1
+    opacity: 0
+    display: inline-block
+    line-height: 1em;
     -webkit-transform-origin: 0 0
-    -webkit-transition: .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
-    -webkit-transition-property: opacity, -webkit-transform, top
+    -moz-transform-origin: 0 0
     top: 0
     left: 0
-    &.not-yet
-      -webkit-transition: none
-      opacity: 0
+    &.ready
+      -webkit-transition-property: -webkit-transform, top, opacity;
+      -webkit-transition-duration:.3s, .3s, .3s;
+      -webkit-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000)
+      -moz-transition-property: -moz-transform, top, opacity;
+      -moz-transition-duration:.3s, .3s, .3s;
+      -moz-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000)
   .debug
     position: absolute
     outline: 1px solid red
@@ -246,3 +325,103 @@ screen-string()
   #hit-test
     opacity: 0
 
+#font-list
+  width: 200px
+  position: absolute
+  top: 0
+  left: 0
+
+#uniform-font-list
+  display: inline-block
+  background-color: hsl(0, 0%, 92%)
+  border: 1px solid hsl(0, 0%, 78%)
+  border-radius: 3px
+  box-shadow: 0 1px 1px hsla(0, 0%, 100%, .3) inset, 0 1px 3px hsla(0, 0%, 0%, .1)
+  font-size: 16px
+  font-weight: bold
+  overflow: hidden
+  position: relative
+  padding: 3px 5px
+  width: 210px
+  span
+    pointer-events: none
+
+footer
+  position: fixed
+  bottom: 0
+  height: 40px
+  width: 100%
+  .font-plus
+    position: absolute
+
+  a.link
+    text-decoration: none
+    font-size: 12px
+    color: hsla(0, 0%, 0%, .7)
+    font-weight: bold
+    display: inline-block
+    &:hover
+      color: hsla(0, 0%, 0%, 1)
+    
+    &[href="#what"]
+      position: absolute
+      left: 30px
+
+    &[href="#like"]
+      position: absolute
+      right: 30px
+  
+  #what
+    height: 30px
+    position: absolute
+    left: 0px
+    bottom: 0px
+    background: hsl(0, 0%, 100%)
+    box-shadow: -10px 0 10px hsla(0, 0%, 100%, 1)
+    margin-left: 0
+    padding: 15px
+    z-index: 1
+    width: 250px
+    -webkit-transform: translate3d(-280px, 0, 0)
+    transition: .5s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+
+    &:target
+      -webkit-transform: translate3d(0px, 0, 0)
+    a
+      margin-left: 40px
+
+    span.cancel
+      position: absolute
+      bottom: 20px
+      left: -10px
+      text-decoration: none
+      a
+        font-size: 20px
+
+  #like
+    height: 75px
+    position: absolute
+    right: 0px
+    bottom: -30px
+    background: hsl(0, 0%, 100%)
+    box-shadow: -10px 0 10px hsla(0, 0%, 100%, 1)
+    margin-left: 0
+    padding: 15px
+    z-index: 1
+    -webkit-transform: translate3d(250px, 0, 0)
+    transition: .5s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+
+    &:target
+      -webkit-transform: translate3d(0px, 0, 0)
+
+    li.cancel
+      position: absolute
+      bottom: 25px
+      right: 28px
+      text-decoration: none
+      a
+        font-size: 20px
+    li
+      display: block
+      list-style: none
+      margin-bottom: 9px

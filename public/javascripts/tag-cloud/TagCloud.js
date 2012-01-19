@@ -14,11 +14,11 @@
 
       LAYOUT_MIX = 4;
 
-      ECCENTRICITY = 1.8;
+      ECCENTRICITY = 1.2;
 
       RADIUS = 1;
 
-      RADIUS = 7;
+      RADIUS = 8;
 
       LOWER_START = 0.45;
 
@@ -79,19 +79,20 @@
 
       STEP_SIZE = 2;
 
-      function TagCloud(tagList, layout, width, height) {
+      function TagCloud(tagList, layout, width, height, fontName) {
         var canvas;
         if (width == null) width = 500;
         if (height == null) height = 300;
+        if (fontName == null) fontName = 'Helvetica';
         canvas = document.createElement('canvas');
         canvas.style.position = 'absolute';
         canvas.setAttribute('id', 'hit-test');
         document.getElementById('stage').appendChild(canvas);
-        this.drawCloud(tagList, layout, width, height);
+        this.drawCloud(tagList, layout, width, height, fontName);
       }
 
-      TagCloud.prototype.drawCloud = function(tagList, layout, width, height) {
-        var i, isLoopDone, iterationFn, onLoopEnd, rectangular, sizeRect, spiral, tagStore;
+      TagCloud.prototype.drawCloud = function(tagList, layout, width, height, fontName) {
+        var i, isLoopDone, iterationFn, lastTop, onLoopEnd, rectangular, sizeRect, spiral, tagStore, topMost;
         var _this = this;
         tagList.sort(function(a, b) {
           return a.tag.length - b.tag.length;
@@ -113,6 +114,8 @@
         onLoopEnd = function() {
           return isLoopDone = true;
         };
+        lastTop = 0;
+        topMost = 0;
         iterationFn = function(loopEntity) {
           var currentTag, flip, rot, tag, x, y;
           tag = tagList[i++];
@@ -128,7 +131,7 @@
           } else if (layout === LAYOUT_MOST_HORIZONTAL) {
             flip = true;
           }
-          currentTag = new Tag(tag.tag, tag.size, rot);
+          currentTag = new Tag(tag.tag, tag.size, rot, fontName);
           x = sizeRect.width - currentTag.rect.width;
           if (x < 0) x = 0;
           x = _this.randInt(x * LOWER_START, x * UPPER_START);
@@ -138,14 +141,33 @@
           y = _this.randInt(y * LOWER_START, y * UPPER_START);
           currentTag.rect.top = y;
           _this.searchPlace(currentTag, tagStore, sizeRect, spiral, flip);
+          if (topMost > currentTag.rect.top) {
+            while (topMost - currentTag > 250) {
+              x = sizeRect.width - currentTag.rect.width;
+              if (x < 0) x = 0;
+              x = _this.randInt(x * LOWER_START, x * UPPER_START);
+              currentTag.rect.left = x;
+              y = sizeRect.height - currentTag.rect.height;
+              if (y < 0) y = 0;
+              y = _this.randInt(y * LOWER_START, y * UPPER_START);
+              currentTag.rect.top = y;
+              _this.searchPlace(currentTag, tagStore, sizeRect, spiral, flip);
+            }
+            topMost = currentTag.rect.top;
+          }
           tagStore.push(currentTag);
           return setTimeout(function() {
             var left, stage, top, _ref;
             stage = document.getElementById('stage');
             _ref = currentTag.update(), top = _ref.top, left = _ref.left;
-            stage.style.marginTop = (-top + 10) + "px";
+            if (top < -550) {
+              currentTag.el.display = "none";
+              return loopEntity.next();
+            }
+            stage.style.marginTop = (-top / 3) + "px";
+            stage.style.left = (top / 2) + "px";
             return loopEntity.next();
-          }, 100);
+          }, 300);
         };
         return this.asyncLoop(tagList.length, iterationFn, onLoopEnd);
       };

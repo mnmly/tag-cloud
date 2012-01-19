@@ -5,15 +5,14 @@
     paths: {
       Tag: "tag-cloud/Tag",
       Rect: "tag-cloud/Rect",
-      TagCloud: "tag-cloud/TagCloud",
-      Evented: "tag-cloud/Evented"
+      TagCloud: "tag-cloud/TagCloud"
     }
   });
 
   require(['app', 'loading-wheel'], function(App, LoadingWheel) {
     return $(document).ready(function() {
-      var animloop, app, count, loadingWheel;
-      app = new App;
+      var animloop, count, loadingWheel;
+      window.app = new App;
       loadingWheel = new LoadingWheel;
       count = 0;
       return (animloop = function() {

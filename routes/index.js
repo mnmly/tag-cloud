@@ -5,10 +5,38 @@
 
   mecab = require('./../node_modules/node-mecab');
 
-  Tweets = require('./../models/Tweets');
+  Tweets = require('./../models/Tweets').Tweets;
 
   exports.index = function(req, res) {
     return res.render("index");
+  };
+
+  exports.save = function(req, res) {
+    return Tweets.findOne({
+      screenName: req.params.n
+    }, function(err, tweets) {
+      var rectInfo;
+      rectInfo = req.body.tags;
+      rectInfo.forEach(function(r, i) {
+        var rectObj;
+        rectObj = {
+          top: r.top,
+          left: r.left,
+          rotation: r.rotation,
+          width: r.width,
+          height: r.height,
+          fontFamily: r.fontFamily,
+          fontSize: r.fontSize
+        };
+        return tweets.tags[i].rect = rectObj;
+      });
+      return tweets.save(function() {
+        console.log(tweets.tags[0].rect);
+        return res.send({
+          msg: 'Saved'
+        });
+      });
+    });
   };
 
   twit = new twitter({
@@ -32,9 +60,14 @@
     };
     return twit.getUserTimeline(twitterParams, function(err, data1) {
       if (err) return res.send(err);
+      if (data1.length === 0) {
+        return res.send({
+          'msg': "No Tweets.."
+        });
+      }
       twitterParams.since_id = data1[data1.length - 1].id;
       return twit.getUserTimeline(twitterParams, function(err, data2) {
-        var count, data, defScale, el, elementStore, elements, maxcount, maxsize, mincount, minsize, noun, store, t, tagItem, tags, tweets, _i, _j, _len, _len2, _ref;
+        var count, data, defScale, el, elementStore, elements, i, maxcount, maxsize, mincount, minsize, noun, store, t, tagItem, tweets, _i, _len, _len2, _ref;
         if (err) return res.send(err);
         data = data1.concat(data2);
         tweets = ((function() {
@@ -46,7 +79,7 @@
           }
           return _results;
         })()).join(', ');
-        tweets = tweets.replace(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi, '').replace(/\//gi, ' ').replace(/\#\w+/gi, ' ').replace(/RT\s@[\w\-\_\d]+\s?\:?/gi, ' ').replace(/^via/gi, ' ').replace(/\@\w+/gi, ' ').replace(/\-/gi, ' ');
+        tweets = tweets.replace(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi, '').replace(/\//gi, ' ').replace(/\#\w+/gi, ' ').replace(/RT\s@[\w\-\_\d]+\s?\:?/gi, ' ').replace(/^via/gi, ' ').replace(/\@\w+/gi, ' ').replace(/\-/gi, ' ').replace(/[\(\)\[\]]/gi, ' ').replace(/['"`:\.\|]/gi, ' ');
         elements = mecab.parse(tweets);
         elementStore = [];
         for (_i = 0, _len = elements.length; _i < _len; _i++) {
@@ -73,14 +106,14 @@
         defScale = function(count, mincount, maxcount, minsize, maxsize) {
           return (0.5 + minsize + Math.pow((maxsize - minsize) * (count * 1.3 / (maxcount - mincount)), 0.98)) | 0;
         };
-        tags = [];
         maxcount = store[0][1];
         mincount = store[store.length - 1][1];
         minsize = 1;
         maxsize = 36;
-        _ref = store.splice(0, 300);
-        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
-          tagItem = _ref[_j];
+        instance.tags = [];
+        _ref = store.splice(0, 200);
+        for (i = 0, _len2 = _ref.length; i < _len2; i++) {
+          tagItem = _ref[i];
           instance.tags.push({
             tag: tagItem[0],
             size: defScale(tagItem[1], mincount, maxcount, minsize, maxsize),
@@ -101,7 +134,7 @@
         msg: "n is required"
       });
     } else {
-      screenName = req.query.n;
+      screenName = req.query.n.toLowerCase();
       return Tweets.findOne({
         screenName: screenName
       }, function(err, tweets) {
@@ -114,6 +147,17 @@
             return startFetching(res, screenName, tweets);
           }
           if (daysDiff < 7) {
+            if ((req.query.force != null) && req.query.force) {
+              return Tweets.update({
+                _id: tweets._id
+              }, {
+                $set: {
+                  tags: []
+                }
+              }, function(err, uTweets) {
+                return startFetching(res, screenName, tweets);
+              });
+            }
             return res.send(tweets.tags);
           } else {
             return startFetching(res, screenName, tweets);

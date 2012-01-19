@@ -41,6 +41,7 @@ app.configure "production", ->
 
 app.get "/", auth, routes.index
 app.get "/fetch", routes.fetch
+app.post "/save/:n", routes.save
 
 app.listen 4010
 console.log "Express server listening on port %d in %s mode", app.address().port, app.settings.env

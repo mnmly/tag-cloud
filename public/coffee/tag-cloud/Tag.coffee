@@ -3,38 +3,47 @@ define ['Rect'], (Rect)->
     count = 0
     leftMost = 0
     topMost = 0
+
+    @makeTagFromJSON = (tag, size, tagData)->
+      t = new Tag(tag, size, tagData.rotation, tagData.fontFamily)
+      t.fontSize = tagData.fontSize
+
+      t.rect = new Rect()
+      t.rect.width = tagData.width
+      t.rect.height = tagData.height
+      t.rect.top = tagData.top
+      t.rect.left = tagData.left
+      
     constructor: (@tag, @size, @rotation, @fontName = "AXIS Std", @fontZoom = 3)->
       if count++ is 0
         Tag.stage = document.getElementById('stage')
         Tag.hitTestCanvas = document.getElementById('hit-test')
+        Tag.stylesheet = document.createElement('style')
+        document.head.appendChild Tag.stylesheet
+      @cid = "t-#{count}"
       @el = document.createElement('span')
+      @el.setAttribute('id', @cid)
       @el.innerText = @tag
       @el.className = 'tag not-yet'
       @el.style.fontSize = @size * @fontZoom + 'px'
-      @el.style.color = @randomColor(255, 255, 255)
-      @el.style.lineHeight = "1em"
-      @el.style.webkitTransform = "rotate(#{@rotation}deg)"
-      stage = document.getElementById('stage')
-      stage.appendChild @el
+      @el.style.fontFamily = "'#{@fontName}', Helvetica"
+      Tag.stage.appendChild @el
       @rect = new Rect
       @rect.width = @el.offsetWidth + 1
       @rect.height = @size * @fontZoom
-      @el.style.height = @size * @fontZoom + "px"
-      @el.style.display = "inline-block"
-      randomLeft = 480 + Math.random() * 480 / 2 + 200
-      randomTop = -Math.random() * 200
-      #@el.style.webkitTransform = "rotate(#{@rotation}deg) translate3d(#{randomLeft}px, #{randomTop}px, #{Math.random() * 400}px)"
+
       if @rotation is 90
         @rect.rotate()
-        #@el.style.webkitTransform = "rotate(#{@rotation}deg) translateX(-#{@el.style.fontSize})"
       @
 
     update: (opacity = 1)->
       
+      rule = Tag.stylesheet.innerHTML
+      
       top = ( 0.5 + @rect.top ) | 0
       left = ( 0.5 + @rect.left ) | 0
-
-      $(@el).data('tag', @)
+      $el = $(@el)
+      $el.data('tag', @)
       stage = document.getElementById('stage')
       stageWidth = stage.offsetWidth / 2
       if left < stageWidth / 2
@@ -58,14 +67,37 @@ define ['Rect'], (Rect)->
         pos =
           left: left
           top: top
-
-      @el.style.top = "-100px"
-      @el.style.webkitTransform = "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" }"
+      #$el.attr('style', '')
+      rule += """
+        ##{@cid}.tag{
+          top: -100px;
+          font-size: #{@fontZoom * @size}px;
+          font-size: #{@fontZoom * @size / 10}rem;
+          height: #{@fontZoom * @size}px;
+          width: #{@el.offsetWidth}px;
+          color: #{@randomColor(0, 0, 0)};
+          -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+          -moz-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+          transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+          opacity: 0;
+        }
+        ##{@cid}.tag.ready{
+          top: 0px;
+          opacity: 1;
+        }
+        #stage.normal-view ##{@cid}.tag{
+          -webkit-transform: translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+          -moz-transform:translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+          transform: scale(1, 1.16) translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+        }
+        \n
+      """
+      Tag.stylesheet.innerHTML = rule
+      #@el.style.top = "-100px"
+      #@el.style.webkitTransform = "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" }"
       setTimeout =>
-        @el.style.top = "0px"
-        @el.className = 'tag'
-        @el.style.opacity = opacity
-        @el.style.webkitTransform = "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0) #{if @rotation is 90 then "rotate(90deg)" else "" }"
+        #Tag.stylesheet.innerHTML = rule
+        @el.className = 'tag ready'
       , 500
       #@el.style.webkitTransform = "translate3d(#{pos.left}px, #{pos.top}px, 0) #{if @rotation is 90 then "rotate(90deg)" else "" }"
 

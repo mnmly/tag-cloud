@@ -10,8 +10,18 @@
 
       topMost = 0;
 
+      Tag.makeTagFromJSON = function(tag, size, tagData) {
+        var t;
+        t = new Tag(tag, size, tagData.rotation, tagData.fontFamily);
+        t.fontSize = tagData.fontSize;
+        t.rect = new Rect();
+        t.rect.width = tagData.width;
+        t.rect.height = tagData.height;
+        t.rect.top = tagData.top;
+        return t.rect.left = tagData.left;
+      };
+
       function Tag(tag, size, rotation, fontName, fontZoom) {
-        var randomLeft, randomTop, stage;
         this.tag = tag;
         this.size = size;
         this.rotation = rotation;
@@ -20,34 +30,33 @@
         if (count++ === 0) {
           Tag.stage = document.getElementById('stage');
           Tag.hitTestCanvas = document.getElementById('hit-test');
+          Tag.stylesheet = document.createElement('style');
+          document.head.appendChild(Tag.stylesheet);
         }
+        this.cid = "t-" + count;
         this.el = document.createElement('span');
+        this.el.setAttribute('id', this.cid);
         this.el.innerText = this.tag;
         this.el.className = 'tag not-yet';
         this.el.style.fontSize = this.size * this.fontZoom + 'px';
-        this.el.style.color = this.randomColor(255, 255, 255);
-        this.el.style.lineHeight = "1em";
-        this.el.style.webkitTransform = "rotate(" + this.rotation + "deg)";
-        stage = document.getElementById('stage');
-        stage.appendChild(this.el);
+        this.el.style.fontFamily = "'" + this.fontName + "', Helvetica";
+        Tag.stage.appendChild(this.el);
         this.rect = new Rect;
         this.rect.width = this.el.offsetWidth + 1;
         this.rect.height = this.size * this.fontZoom;
-        this.el.style.height = this.size * this.fontZoom + "px";
-        this.el.style.display = "inline-block";
-        randomLeft = 480 + Math.random() * 480 / 2 + 200;
-        randomTop = -Math.random() * 200;
         if (this.rotation === 90) this.rect.rotate();
         this;
       }
 
       Tag.prototype.update = function(opacity) {
-        var left, pos, randomLeft, randomTop, stage, stageWidth, top;
+        var $el, left, pos, randomLeft, randomTop, rule, stage, stageWidth, top;
         var _this = this;
         if (opacity == null) opacity = 1;
+        rule = Tag.stylesheet.innerHTML;
         top = (0.5 + this.rect.top) | 0;
         left = (0.5 + this.rect.left) | 0;
-        $(this.el).data('tag', this);
+        $el = $(this.el);
+        $el.data('tag', this);
         stage = document.getElementById('stage');
         stageWidth = stage.offsetWidth / 2;
         if (left < stageWidth / 2) {
@@ -69,13 +78,10 @@
             top: top
           };
         }
-        this.el.style.top = "-100px";
-        this.el.style.webkitTransform = "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "");
+        rule += "#" + this.cid + ".tag{\n  top: -100px;\n  font-size: " + (this.fontZoom * this.size) + "px;\n  font-size: " + (this.fontZoom * this.size / 10) + "rem;\n  height: " + (this.fontZoom * this.size) + "px;\n  width: " + this.el.offsetWidth + "px;\n  color: " + (this.randomColor(0, 0, 0)) + ";\n  -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  -moz-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  opacity: 0;\n}\n#" + this.cid + ".tag.ready{\n  top: 0px;\n  opacity: 1;\n}\n#stage.normal-view #" + this.cid + ".tag{\n  -webkit-transform: translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  -moz-transform:translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  transform: scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n}\n\n";
+        Tag.stylesheet.innerHTML = rule;
         setTimeout(function() {
-          _this.el.style.top = "0px";
-          _this.el.className = 'tag';
-          _this.el.style.opacity = opacity;
-          return _this.el.style.webkitTransform = "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(" + pos.left + "px, " + pos.top + "px, 0) " + (_this.rotation === 90 ? "rotate(90deg)" : "");
+          return _this.el.className = 'tag ready';
         }, 500);
         return {
           top: topMost,
