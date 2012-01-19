@@ -13,7 +13,7 @@
 
   require(['app', 'fontplus.utils', "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js", 'http://webfont.fontplus.jp/accessor/script/fontplus.js?LyzUQoPX3yA%3D'], function(App, FontPlusUtils) {
     return $(document).ready(function() {
-      var animloop, app, count;
+      var animloop, app, count, data, setupInitialFont;
       window.fontPlusUtils = new FontPlusUtils(WebFont);
       window.app = app = new App(window.tweetData);
       count = 0;
@@ -22,7 +22,7 @@
         requestAnimFrame(animloop);
         return app.loadingWheel.render(count++);
       })();
-      return app.bind('onFetchDone', function(data) {
+      setupInitialFont = function(data) {
         var t, text, _initial;
         text = (function() {
           var _i, _len, _results;
@@ -39,7 +39,13 @@
             return window.app.trigger('onFontReady', fontFamily);
           }
         });
-      });
+      };
+      if (window.tweetData != null) {
+        data = window.tweetData.tweets.splice(0, 100);
+        return setupInitialFont(data);
+      } else {
+        return app.bind('onFetchDone', setupInitialFont);
+      }
     });
   });
 
