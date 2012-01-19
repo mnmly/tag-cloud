@@ -46,6 +46,9 @@
         if (tweetData == null) {
           this.setupLoadingWheel();
         } else {
+          this.setupLoadingWheel();
+          $(".loader").insertBefore('#stage');
+          $(".loader p").text("Loading Type...");
           this.setupPreload(tweetData);
           this.prepareTagCloud(tweetData.tweets, tweetData.screenName, true);
         }
@@ -119,6 +122,8 @@
         return this.bind('onFontReady', function(fontName) {
           _this.isFontLoaded = false;
           return setTimeout(function() {
+            _this.loadingWheel.doneLoading = true;
+            $(".loader").fadeOut(300);
             return _this.kickoffTagCloud(fontName);
           }, 2000);
         });
@@ -139,8 +144,12 @@
             _this.container.removeClass('fetching');
             _this.createLabel();
             return setTimeout(function() {
+              var $form;
+              $form = _this.screenNameField.parents('form');
+              $form.find(".loader").find('p').text("Loading Type...");
+              $form.find(".loader").insertBefore($("#stage"));
+              $form.remove();
               _this.screenNameField.parents('form').remove();
-              _this.loadingWheel.doneLoading = true;
               return _this.prepareTagCloud(data, screenName);
             }, 500);
           }

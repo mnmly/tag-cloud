@@ -36,6 +36,9 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
       unless tweetData?
         @setupLoadingWheel()
       else
+        @setupLoadingWheel()
+        $(".loader").insertBefore('#stage')
+        $(".loader p").text "Loading Type..."
         @setupPreload(tweetData)
         @prepareTagCloud(tweetData.tweets, tweetData.screenName, yes)
         #@kickOffTagCloud(tweetData.tweets, tweetData.screenName)
@@ -104,6 +107,8 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
 
         @isFontLoaded = no
         setTimeout =>
+          @loadingWheel.doneLoading = yes
+          $(".loader").fadeOut(300)
           @kickoffTagCloud(fontName)
         , 2000
     
@@ -119,8 +124,11 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
           @container.removeClass 'fetching'
           @createLabel()
           setTimeout =>
+            $form = @screenNameField.parents('form')
+            $form.find(".loader").find('p').text "Loading Type..."
+            $form.find(".loader").insertBefore $("#stage")
+            $form.remove()
             @screenNameField.parents('form').remove()
-            @loadingWheel.doneLoading = yes
             @prepareTagCloud(data, screenName)
             #@kickOffTagCloud(data, screenName)
           , 500
