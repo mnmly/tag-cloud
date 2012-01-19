@@ -49,7 +49,7 @@
           this.setupLoadingWheel();
         } else {
           this.setupPreload(tweetData);
-          this.prepareTagCloud(tweetData.tweets, tweetData.screenName);
+          this.prepareTagCloud(tweetData.tweets, tweetData.screenName, true);
         }
       }
 
@@ -122,7 +122,7 @@
           _this.isFontLoaded = false;
           return setTimeout(function() {
             return _this.kickoffTagCloud(fontName);
-          }, 2000);
+          }, 1500);
         });
       };
 
@@ -172,11 +172,12 @@
         return this.tagCloud.bind("onLoopEnd", this.onLoopEndCallBack);
       };
 
-      App.prototype.prepareTagCloud = function(data, screenName) {
+      App.prototype.prepareTagCloud = function(data, screenName, preloaded) {
         var _this = this;
+        if (preloaded == null) preloaded = false;
         this.data = data.splice(0, 100);
         this.screenName = screenName;
-        this.trigger('onFetchDone', this.data);
+        if (!preloaded) this.trigger('onFetchDone', this.data);
         this.onLoopEndCallBack = function() {
           var _this = this;
           return setTimeout(function() {
