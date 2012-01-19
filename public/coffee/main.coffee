@@ -22,6 +22,7 @@ require [
 
     window.fontPlusUtils  = new FontPlusUtils(WebFont)
     window.app = app = new App(window.tweetData)
+
     count = 0
     (animloop = ->
       if (not app.loadingWheel?) or app.loadingWheel.doneLoading
@@ -29,13 +30,18 @@ require [
       requestAnimFrame animloop
       app.loadingWheel.render(count++)
     )()
-
-    app.bind 'onFetchDone', (data)->
+    setupInitialFont = (data)->
       text = (t.tag for t in data)
       _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''))
       window.fontPlusUtils.bind 'fontactive', (_uid, fontFamily, fontDescription, text)->
         if _initial is _uid
           window.app.trigger( 'onFontReady', fontFamily )
+      
+    if window.tweetData?
+      data = window.tweetData.tweets.splice(0, 100)
+      setupInitialFont(data)
+    else
+      app.bind 'onFetchDone', setupInitialFont
 
 window.requestAnimFrame = (->
   window.requestAnimationFrame or window.webkitRequestAnimationFrame or window.mozRequestAnimationFrame or window.oRequestAnimationFrame or window.msRequestAnimationFrame or (callback) ->
