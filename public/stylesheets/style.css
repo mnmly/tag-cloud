@@ -60,7 +60,7 @@ input{font-family:Helvetica Neue,Helvetica,sans-serif}
 #stage .debug{position:absolute;outline:1px solid #f00;}
 #stage .debug::before{position:absolute;content:attr(id);top:-10px;left:0}
 #stage #hit-test{opacity:0;filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=0)}
-#font-list{width:200px;position:absolute;top:0;left:0}
+#font-list{width:200px;position:absolute;top:0;left:0;opacity:0;filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=0)}
 #uniform-font-list{display:inline-block;background-color:#ebebeb;border:1px solid #c7c7c7;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(255,255,255,0.30) inset,0 1px 3px rgba(0,0,0,0.10);-moz-box-shadow:0 1px 1px rgba(255,255,255,0.30) inset,0 1px 3px rgba(0,0,0,0.10);box-shadow:0 1px 1px rgba(255,255,255,0.30) inset,0 1px 3px rgba(0,0,0,0.10);font-size:16px;font-weight:bold;overflow:hidden;position:relative;padding:3px 5px;width:210px;}
 #uniform-font-list span{pointer-events:none}
 footer{position:fixed;bottom:0;height:40px;width:100%;}
