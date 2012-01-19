@@ -128,7 +128,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
       @tagCloud = new TagCloud @data, 4, 500, 500, fontName
       @tagCloud.bind "onLoopEnd", @onLoopEndCallBack
 
-    prepareTagCloudTag: (data, screenName)->
+    prepareTagCloud: (data, screenName)->
       @data = data.splice(0, 100)
       @screenName = screenName
       @onLoopEndCallBack = ->
