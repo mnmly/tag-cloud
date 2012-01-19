@@ -35,7 +35,7 @@ define [ "TagCloud", "LoadingWheel", "vendor/jquery.uniform.min" ], (TagCloud, L
         @setupLoadingWheel()
       else
         @setupPreload(tweetData)
-        @kickOffTagCloud(tweetData.tweets, tweets.screenName)
+        @kickOffTagCloud(tweetData.tweets, tweetData.screenName)
 
     setupPreload: (tweetData)->
       @container.addClass 'view'

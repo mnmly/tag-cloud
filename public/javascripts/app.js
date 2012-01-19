@@ -43,7 +43,7 @@
           this.setupLoadingWheel();
         } else {
           this.setupPreload(tweetData);
-          this.kickOffTagCloud(tweetData.tweets, tweets.screenName);
+          this.kickOffTagCloud(tweetData.tweets, tweetData.screenName);
         }
       }
 
