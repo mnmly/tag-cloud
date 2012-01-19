@@ -76,6 +76,19 @@
           e.preventDefault();
           $el = $("#view-mode");
           $el.toggleClass('normal-view');
+          if ($el.hasClass('normal-view')) {
+            $("#stage .tag").each(function() {
+              var style;
+              style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '');
+              return $(this).css('-webkit-transform', style);
+            });
+          } else {
+            $("#stage .tag").each(function() {
+              var style;
+              style = $(this).attr('style').replace('translate3d', 'rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d');
+              return $(this).css('-webkit-transform', style);
+            });
+          }
           return $("#stage").toggleClass('normal-view');
         });
         this.screenNameField.focus(function() {
@@ -167,6 +180,11 @@
           var _this = this;
           return setTimeout(function() {
             $("#stage").addClass('normal-view');
+            $("#stage .tag").each(function() {
+              var style;
+              style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '');
+              return $(this).css('-webkit-transform', style);
+            });
             $("#view-mode").addClass('ready').addClass('normal-view');
             return $("#view-mode .arrow").delay(1000).fadeOut(1000, function() {
               return $(this).remove();
