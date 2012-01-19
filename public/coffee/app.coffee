@@ -27,7 +27,9 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
 
 
     constructor: (tweetData = null)->
+      
       super
+      @font = 'RodinPro-DB'
       @setupTypeList()
       @attachEvents()
       @container = $(".container")

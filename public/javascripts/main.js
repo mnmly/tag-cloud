@@ -16,6 +16,7 @@
       var animloop, app, count, data, setupInitialFont;
       window.fontPlusUtils = new FontPlusUtils(WebFont);
       window.app = app = new App(window.tweetData);
+      window.app.font = "RodinBokutohPro-L";
       count = 0;
       (animloop = function() {
         if ((!(app.loadingWheel != null)) || app.loadingWheel.doneLoading) return;
@@ -33,7 +34,7 @@
           }
           return _results;
         })();
-        _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''));
+        _initial = fontPlusUtils.getFontForText(window.app.font, text.join(''));
         return window.fontPlusUtils.bind('fontactive', function(_uid, fontFamily, fontDescription, text) {
           if (_initial === _uid) {
             return window.app.trigger('onFontReady', fontFamily);
