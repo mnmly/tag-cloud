@@ -182,7 +182,7 @@
       App.prototype.prepareTagCloud = function(data, screenName, preloaded) {
         var _this = this;
         if (preloaded == null) preloaded = false;
-        this.data = data.splice(0, 100);
+        this.data = data.splice(0, 150);
         this.screenName = screenName;
         if (!preloaded) this.trigger('onFetchDone', this.data);
         this.onLoopEndCallBack = function() {

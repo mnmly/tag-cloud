@@ -152,7 +152,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
       @tagCloud.bind "onLoopEnd", @onLoopEndCallBack
 
     prepareTagCloud: (data, screenName, preloaded = no)->
-      @data = data.splice(0, 100)
+      @data = data.splice(0, 150)
       @screenName = screenName
       unless preloaded
         @trigger('onFetchDone', @data)

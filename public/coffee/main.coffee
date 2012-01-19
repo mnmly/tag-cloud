@@ -39,7 +39,7 @@ require [
           window.app.trigger( 'onFontReady', fontFamily )
       
     if window.tweetData?
-      data = window.tweetData.tweets.splice(0, 100)
+      data = window.tweetData.tweets.splice(0, 150)
       setupInitialFont(data)
     else
       app.bind 'onFetchDone', setupInitialFont
