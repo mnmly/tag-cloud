@@ -38,7 +38,7 @@
         });
       };
       app.bind('onFetchDone', function(data) {
-        while (window.fontPlusUtils != null) {
+        while (!(window.fontPlusUtils != null)) {
           1 + 1;
         }
         return loadInitialFont(data);
