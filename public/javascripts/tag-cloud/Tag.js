@@ -112,6 +112,7 @@
         $el.append("<span>" + this.tag + "</span>");
         setTimeout(function() {
           _this.el.style.opacity = 1;
+          _this.el.style.top = 0;
           return _this.el.className = 'tag ready';
         }, 500);
         return {
