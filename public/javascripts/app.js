@@ -155,7 +155,7 @@
         return this.tagCloud.bind("onLoopEnd", this.onLoopEndCallBack);
       };
 
-      App.prototype.prepareTagCloudTag = function(data, screenName) {
+      App.prototype.prepareTagCloud = function(data, screenName) {
         var _this = this;
         this.data = data.splice(0, 100);
         this.screenName = screenName;
