@@ -11,9 +11,10 @@
     }
   });
 
-  require(['app'], function(App) {
+  require(['app', 'fontplus.utils', "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js", 'http://webfont.fontplus.jp/accessor/script/fontplus.js?LyzUQoPX3yA%3D'], function(App, FontPlusUtils) {
     return $(document).ready(function() {
-      var animloop, app, count, loadInitialFont;
+      var animloop, app, count;
+      window.fontPlusUtils = new FontPlusUtils(WebFont);
       window.app = app = new App(window.tweetData);
       count = 0;
       (animloop = function() {
@@ -21,7 +22,7 @@
         requestAnimFrame(animloop);
         return app.loadingWheel.render(count++);
       })();
-      loadInitialFont = function(data) {
+      return app.bind('onFetchDone', function(data) {
         var t, text, _initial;
         text = (function() {
           var _i, _len, _results;
@@ -34,17 +35,10 @@
         })();
         _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''));
         return window.fontPlusUtils.bind('fontactive', function(_uid, fontFamily, fontDescription, text) {
-          if (_initial === _uid) return app.trigger('onFontReady', fontFamily);
+          if (_initial === _uid) {
+            return window.app.trigger('onFontReady', fontFamily);
+          }
         });
-      };
-      app.bind('onFetchDone', function(data) {
-        while (!(window.fontPlusUtils != null)) {
-          1 + 1;
-        }
-        return loadInitialFont(data);
-      });
-      return require(['fontplus.utils', "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js", 'http://webfont.fontplus.jp/accessor/script/fontplus.js?LyzUQoPX3yA%3D'], function(FontPlusUtils) {
-        return window.fontPlusUtils = new FontPlusUtils(WebFont);
       });
     });
   });
