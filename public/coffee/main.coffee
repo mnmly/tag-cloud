@@ -33,7 +33,7 @@ require [
           app.trigger( 'onFontReady', fontFamily )
       
     app.bind 'onFetchDone', (data)->
-      while window.fontPlusUtils?
+      while ( not window.fontPlusUtils? )
         1 + 1
       loadInitialFont(data)
 
