@@ -40,6 +40,7 @@
       function App(tweetData) {
         if (tweetData == null) tweetData = null;
         App.__super__.constructor.apply(this, arguments);
+        this.font = 'RodinPro-DB';
         this.setupTypeList();
         this.attachEvents();
         this.container = $(".container");
