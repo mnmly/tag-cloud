@@ -4,7 +4,7 @@ stylus = require('stylus')
 nib = require('nib')
 
 app = module.exports = express.createServer()
-auth = express.basicAuth 'd', 'nonono'
+#auth = express.basicAuth 'd', 'nonono'
 
 
 compile = (str, path) ->
@@ -30,7 +30,7 @@ app.configure "development", ->
 app.configure "production", ->
   app.use express.errorHandler()
 
-app.get "/", auth, routes.index
+app.get "/", routes.index
 app.get "/f", routes.fetch
 app.post "/s/:n", routes.save
 app.get "/:screenName", routes.user
