@@ -62,6 +62,15 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         e.preventDefault()
         $el = $("#view-mode")
         $el.toggleClass 'normal-view'
+        if $el.hasClass 'normal-view'
+          $("#stage .tag").each ->
+            style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '')
+            $(this).css('-webkit-transform', style)
+        else
+          $("#stage .tag").each ->
+            style = $(this).attr('style').replace('translate3d', 'rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d')
+            $(this).css('-webkit-transform', style)
+          
         $("#stage").toggleClass 'normal-view'
 
       @screenNameField.focus =>
@@ -139,6 +148,10 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
       @onLoopEndCallBack = ->
         setTimeout =>
           $("#stage").addClass 'normal-view'
+          $("#stage .tag").each ->
+            style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '')
+            $(this).css('-webkit-transform', style)
+
           $("#view-mode").addClass('ready')
                             .addClass 'normal-view'
           
