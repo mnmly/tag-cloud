@@ -24,25 +24,25 @@ require [
       requestAnimFrame animloop
       app.loadingWheel.render(count++)
     )()
-  
+    
+    loadInitialFont = (data) ->
+      text = (t.tag for t in data)
+      _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''))
+      window.fontPlusUtils.bind 'fontactive', (_uid, fontFamily, fontDescription, text)->
+        if _initial is _uid
+          app.trigger( 'onFontReady', fontFamily )
+      
     app.bind 'onFetchDone', (data)->
-      unless window.fontPlusUtils?
-        app.bind 'onFontPlusReady', ->
-          
+      while window.fontPlusUtils?
+        1 + 1
+      loadInitialFont(data)
 
     require [
        'fontplus.utils'
        "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js"
        'http://webfont.fontplus.jp/accessor/script/fontplus.js?LyzUQoPX3yA%3D'], (FontPlusUtils)->
+        window.fontPlusUtils  = new FontPlusUtils(WebFont)
       
-      app.bind 'onFetchDone', (data)->
-        fontPlusUtils  = new FontPlusUtils(WebFont)
-        text = (t.tag for t in data)
-        _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''))
-        fontPlusUtils.bind 'fontactive', (_uid, fontFamily, fontDescription, text)->
-          if _initial is _uid
-            app.trigger( 'onFontReady', fontFamily )
-
 
 window.requestAnimFrame = (->
   window.requestAnimationFrame or window.webkitRequestAnimationFrame or window.mozRequestAnimationFrame or window.oRequestAnimationFrame or window.msRequestAnimationFrame or (callback) ->
