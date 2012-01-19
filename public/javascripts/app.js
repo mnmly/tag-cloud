@@ -159,6 +159,7 @@
         var _this = this;
         this.data = data.splice(0, 100);
         this.screenName = screenName;
+        this.trigger('onFetchDone', this.data);
         this.onLoopEndCallBack = function() {
           var _this = this;
           return setTimeout(function() {
