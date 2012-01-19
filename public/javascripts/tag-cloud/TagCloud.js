@@ -1,8 +1,12 @@
+(function() {
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  define(['Tag', 'Rect'], function(Tag, Rect) {
+  define(['Tag', 'Rect', "Evented"], function(Tag, Rect, Evented) {
     var TagCloud;
     return TagCloud = (function() {
       var ECCENTRICITY, LAYOUT_HORIZONTAL, LAYOUT_MIX, LAYOUT_MOST_HORIZONTAL, LAYOUT_MOST_VERTICAL, LAYOUT_VERTICAL, LOWER_START, RADIUS, STEP_SIZE, UPPER_START, archimedeanSpiral, rectangularSpiral, _archimedeanSpiral, _rectangularSpiral;
+
+      __extends(TagCloud, Evented);
 
       LAYOUT_HORIZONTAL = 0;
 
@@ -27,17 +31,18 @@
       STEP_SIZE = 4;
 
       _rectangularSpiral = function(reverse) {
-        var DEFAULT_STEP, direction, directions, dx, dy, exposed, spl;
+        var DEFAULT_STEP, direction, directions, dx, dy, exposed, spl, step;
         DEFAULT_STEP = 3;
         directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
         if (reverse) directions.reverse();
         direction = directions[0];
         spl = 1;
         dx = dy = 0;
+        step = 0;
         return exposed = {
           next: function() {
-            var obj, step, _ref;
-            for (step = 0, _ref = spl * 2; 0 <= _ref ? step < _ref : step > _ref; 0 <= _ref ? step++ : step--) {
+            var obj;
+            if (step < spl * 2) {
               if (step === spl) direction = directions[(spl - 1) % 4];
               dx += direction[0] * STEP_SIZE * DEFAULT_STEP;
               dy += direction[1] * STEP_SIZE * DEFAULT_STEP;
@@ -45,9 +50,25 @@
                 dx: dx,
                 dy: dy
               };
+              step++;
               return obj;
+            } else {
+              step = 0;
+              spl++;
+              return this.next();
             }
-            return spl += 1;
+            /*
+                      for step in [ 0...spl * 2 ]
+                        if step is spl
+                          direction = directions[(spl - 1) % 4]
+                        dx += direction[0] * STEP_SIZE * DEFAULT_STEP
+                        dy += direction[1] * STEP_SIZE * DEFAULT_STEP
+                        obj =
+                          dx: dx
+                          dy: dy
+                        return obj
+                      spl += 1
+            */
           }
         };
       };
@@ -84,6 +105,7 @@
         if (width == null) width = 500;
         if (height == null) height = 300;
         if (fontName == null) fontName = 'Helvetica';
+        TagCloud.__super__.constructor.apply(this, arguments);
         canvas = document.createElement('canvas');
         canvas.style.position = 'absolute';
         canvas.setAttribute('id', 'hit-test');
@@ -112,7 +134,7 @@
         i = 0;
         isLoopDone = false;
         onLoopEnd = function() {
-          return isLoopDone = true;
+          return _this.trigger('onLoopEnd');
         };
         lastTop = 0;
         topMost = 0;
@@ -141,30 +163,12 @@
           y = _this.randInt(y * LOWER_START, y * UPPER_START);
           currentTag.rect.top = y;
           _this.searchPlace(currentTag, tagStore, sizeRect, spiral, flip);
-          if (topMost > currentTag.rect.top) {
-            while (topMost - currentTag > 250) {
-              x = sizeRect.width - currentTag.rect.width;
-              if (x < 0) x = 0;
-              x = _this.randInt(x * LOWER_START, x * UPPER_START);
-              currentTag.rect.left = x;
-              y = sizeRect.height - currentTag.rect.height;
-              if (y < 0) y = 0;
-              y = _this.randInt(y * LOWER_START, y * UPPER_START);
-              currentTag.rect.top = y;
-              _this.searchPlace(currentTag, tagStore, sizeRect, spiral, flip);
-            }
-            topMost = currentTag.rect.top;
-          }
           tagStore.push(currentTag);
           return setTimeout(function() {
             var left, stage, top, _ref;
             stage = document.getElementById('stage');
             _ref = currentTag.update(), top = _ref.top, left = _ref.left;
-            if (top < -550) {
-              currentTag.el.display = "none";
-              return loopEntity.next();
-            }
-            stage.style.marginTop = (-top / 3) + "px";
+            stage.style.marginTop = -(top / 5) + "px";
             stage.style.left = (top / 2) + "px";
             return loopEntity.next();
           }, 300);
@@ -270,3 +274,5 @@
 
     })();
   });
+
+}).call(this);

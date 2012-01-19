@@ -1,11 +1,10 @@
 @import 'nib'
-*
-  -webkit-backface-visibility: hidden;
 
 body
   font-family Helvetica Neue, Helvetica, sans-serif
   height: 100%
   margin: 0
+  -webkit-font-smoothing: antialiased
 
 input
   font-family Helvetica Neue, Helvetica, sans-serif
@@ -68,7 +67,6 @@ input-style()
     box-sizing: border-box
     padding: 30px
     padding-top: 75px
-
     .icon-cog
       position: absolute;
       right: -70px;
@@ -102,11 +100,13 @@ input-style()
   &.ready
     margin-top: -150px
     .card
+      -webkit-transition: .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
       padding-top: 50px
     .button-wrapper
       transform rotate(0deg) scale(1)
 
   &.fetching
+    -webkit-transform-style: initial
     #twitter-form
       .loader
         opacity: 1
@@ -123,9 +123,12 @@ input-style()
     margin-top: 0
     top: 0
     text-align: center
+    .home
+      opacity: .6
     .card
       opacity: 0
       pointer-events: none
+      -webkit-animation: none
 
     a[href="#settings"]
       opacity: 0
@@ -139,6 +142,15 @@ input-style()
     transform rotate(-360deg) scale(0.01)
     transition-property: opacity, -webkit-transform
     transition-duration: 1s
+
+  .home
+    position: fixed
+    left: 20px
+    top: 15px
+    opacity: 0;
+    svg
+      height: 16px
+      width: 16px
 
 #twitter-form
   position: relative
@@ -209,6 +221,11 @@ input-style()
     box-sizing border-box
     box-shadow: 0 1px 1px hsla(0, 0%, 0%, .1), 0 0px 5px 1px hsla(0, 0%, 100%, .85) inset
     transition: .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+    &:active
+      background-image linear-gradient(top, hsla(0, 0%, 80%, 1), hsla(0, 0%, 85%, 1) )
+      box-shadow: 0 1px 5px hsla(0, 0%, 0%, .8) inset
+      svg *
+        fill: hsl(215, 140%, 50%)
 
     &::before
       content: ''
@@ -225,6 +242,7 @@ input-style()
     .icon-wrapper
       margin-top: 0px
       svg
+        cursor: pointer
         position: absolute
         top: 0px
         left: 0px
@@ -233,8 +251,8 @@ input-style()
         margin-left: 10px
         margin-top: 10px
         opacity: .8
-
     input
+      cursor: pointer
       top 0
       left 0
       position: absolute
@@ -278,7 +296,8 @@ screen-string()
       margin-right: 5px
       margin-bottom: 0
       
-    span
+    a
+      text-decoration: none
       position: relative
       display: inline-block
       top: -3px
@@ -292,6 +311,12 @@ screen-string()
   position: relative
   width: 500px
   margin: 0 auto
+  &.normal-view
+    left: 0 !important
+    top: 80px !important
+  ::selection
+    background: black
+    color: white
   .tag
     font-size: 30px
     font-weight: bold
@@ -312,6 +337,12 @@ screen-string()
       -moz-transition-property: -moz-transform, top, opacity;
       -moz-transition-duration:.3s, .3s, .3s;
       -moz-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000)
+    >span
+      position: absolute
+      top: 0px
+      left: 0
+      -webkit-text-fill-color: transparent
+      text-shadow: 0 0 3px hsla(0, 0%, 0%, .4)
   .debug
     position: absolute
     outline: 1px solid red
@@ -376,7 +407,6 @@ footer
     position: absolute
     left: 0px
     bottom: 0px
-    background: hsl(0, 0%, 100%)
     box-shadow: -10px 0 10px hsla(0, 0%, 100%, 1)
     margin-left: 0
     padding: 15px
@@ -385,16 +415,18 @@ footer
     -webkit-transform: translate3d(-280px, 0, 0)
     transition: .5s cubic-bezier(0.860, 0.000, 0.070, 1.000)
 
-    &:target
+    &:target,
+    &.hover
       -webkit-transform: translate3d(0px, 0, 0)
     a
-      margin-left: 40px
+      margin-left: 15px
 
     span.cancel
       position: absolute
       bottom: 20px
       left: -10px
       text-decoration: none
+      display: none
       a
         font-size: 20px
 
@@ -411,7 +443,8 @@ footer
     -webkit-transform: translate3d(250px, 0, 0)
     transition: .5s cubic-bezier(0.860, 0.000, 0.070, 1.000)
 
-    &:target
+    &:target,
+    &.hover
       -webkit-transform: translate3d(0px, 0, 0)
 
     li.cancel
@@ -419,9 +452,87 @@ footer
       bottom: 25px
       right: 28px
       text-decoration: none
+      display: none
       a
         font-size: 20px
     li
       display: block
       list-style: none
       margin-bottom: 9px
+
+#view-mode
+  width: 16px
+  height: 16px
+  border: 1px solid hsl(215, 140%, 50%)
+  position: relative;
+  -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16);
+  -webkit-transition: .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+  position: fixed
+  top: 20px
+  right: 20px
+  opacity: 0
+  display: block
+  &.ready
+    opacity: .3
+    .arrow
+      opacity: 1
+      -webkit-transform: translate3d(0, 0, 0)
+      pointer-events: none
+  &:hover
+    opacity: .5
+  &.normal-view
+    -webkit-transform: rotate(0deg) skew(0deg, 0deg) scale(1, 1);
+  .row
+    position: absolute
+    width: 33%
+    height: 100%
+    border-right: 1px solid hsl(215, 140%, 50%)
+    display: block
+  .row.two
+    left: 33%
+
+  .col
+    position: absolute
+    width: 100%
+    height: 33%
+    border-bottom: 1px solid hsl(215, 140%, 50%)
+    display: block
+  .col.two
+    top: 33%
+
+  .arrow
+    position: absolute
+    left: -80px
+    top: 30px
+    opacity: 0
+    -webkit-transition: -webkit-transform .3s cubic-bezier(0.860, 0.000, 0.070, 1.000)
+    -webkit-transform: translate3d(-50px, 50px, 0)
+
+
+@-webkit-keyframes bounce
+  0%
+    -webkit-transform: rotate(90deg) translate3d(0px, 0, 0)
+    -webkit-animation-timing-function: ease-out
+
+  50%
+    -webkit-transform: rotate(90deg) translate3d(-10px, 0px, 0)
+    -webkit-animation-timing-function: ease-in
+
+  100%
+    -webkit-transform: rotate(90deg) translate3d(0, 0, 0)
+
+.link.me
+  display: block
+  margin: 0 auto
+  width: 30px
+  text-align: center
+  -webkit-transform: rotate(90deg)
+  background: white
+  opacity: .5
+  -webkit-font-smoothing: antialiased
+
+.link.me:hover
+  -webkit-animation: bounce 0.6s infinite
+  opacity:1
+
+

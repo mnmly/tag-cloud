@@ -1,7 +1,7 @@
 
   define(["vendor/jquery.easing.1.3"], function() {
-    var App;
-    return App = (function() {
+    var LoadingWheel;
+    return LoadingWheel = (function() {
       var ratio, shapes, size, _shapes, _toRad;
 
       size = 30;
@@ -29,7 +29,7 @@
 
       _shapes = ['triangle', 'circle', 'square'];
 
-      function App() {
+      function LoadingWheel() {
         this.canvas = document.getElementById('loader');
         this.context = this.canvas.getContext('2d');
         this.from = _shapes[0];
@@ -45,7 +45,7 @@
         this.attachEvents();
       }
 
-      App.prototype.createPoints = function() {
+      LoadingWheel.prototype.createPoints = function() {
         var i, rad, sx, sxs, sy, sys, tx, txs, ty, tys, x, y;
         tx = shapes.triangle.x.slice(0);
         ty = shapes.triangle.y.slice(0);
@@ -87,7 +87,7 @@
         }
       };
 
-      App.prototype.render = function(t) {
+      LoadingWheel.prototype.render = function(t) {
         var i, _ref;
         this.context.clearRect(0, 0, size + 5, size + 5);
         this.context.strokeStyle = 'rgba(0, 0, 0, .5)';
@@ -111,7 +111,7 @@
         return this.context.restore();
       };
 
-      App.prototype.attachEvents = function() {
+      LoadingWheel.prototype.attachEvents = function() {
         var _this = this;
         return $("#identity span").mouseenter(function(e) {
           var index;
@@ -122,7 +122,7 @@
         });
       };
 
-      App.prototype.tweenShape = function(t) {
+      LoadingWheel.prototype.tweenShape = function(t) {
         var k, k1, k2, p, speed, _ref, _results;
         speed = 50;
         _results = [];
@@ -151,14 +151,14 @@
         return _results;
       };
 
-      App.prototype.assignTarget = function() {
+      LoadingWheel.prototype.assignTarget = function() {
         this.x1 = shapes[this.from].x;
         this.y1 = shapes[this.from].y;
         this.x2 = shapes[this.to].x;
         return this.y2 = shapes[this.to].y;
       };
 
-      return App;
+      return LoadingWheel;
 
     })();
   });

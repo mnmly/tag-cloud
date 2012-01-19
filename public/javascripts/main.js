@@ -5,19 +5,21 @@
     paths: {
       Tag: "tag-cloud/Tag",
       Rect: "tag-cloud/Rect",
-      TagCloud: "tag-cloud/TagCloud"
+      TagCloud: "tag-cloud/TagCloud",
+      Evented: "tag-cloud/Evented",
+      LoadingWheel: "loading-wheel"
     }
   });
 
-  require(['app', 'loading-wheel'], function(App, LoadingWheel) {
+  require(['app'], function(App) {
     return $(document).ready(function() {
-      var animloop, count, loadingWheel;
-      window.app = new App;
-      loadingWheel = new LoadingWheel;
+      var animloop, app, count;
+      window.app = app = new App(window.tweetData);
       count = 0;
       return (animloop = function() {
+        if ((!(app.loadingWheel != null)) || app.loadingWheel.doneLoading) return;
         requestAnimFrame(animloop);
-        return loadingWheel.render(count++);
+        return app.loadingWheel.render(count++);
       })();
     });
   });

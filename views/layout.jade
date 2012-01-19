@@ -1,19 +1,28 @@
 !!!5
 html
   head
-    title FontPlus
+    - if( typeof tweets != 'undefined')
+      title TweetCloud | @#{ screenName }
+    - else
+      title TweetCloud
     link(rel='stylesheet', href='/stylesheets/vendor/animate.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src="/javascripts/vendor/require.js")
     script
       require(['/javascripts/main.js']);
+    - if( typeof tweets != 'undefined')
+      script
+        tweetData = {
+          tweets: !{JSON.stringify(tweets)},
+          screenName: "!{screenName}"
+        }
   body
     div.container#settings!= body
 
     footer
-      a.link(href="#what") What is it?
+      a.link(href="#what") What is this for?
       a.link(href="#like") Like it?
-
+      a.link.me(href="http://mnmly.com", target="_blank") :D
       div#what
         span.cancel
           a.link(href="#") ×

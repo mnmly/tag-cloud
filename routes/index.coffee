@@ -6,8 +6,20 @@ Tweets = require('./../models/Tweets').Tweets
 exports.index = (req, res) ->
   res.render "index"
 
+exports.user = (req, res, next) ->
+  if req.params.screenName.search(/\./) > -1
+    return next()
+  Tweets.findOne {screenName: req.params.screenName.toLowerCase()}, (err, tweets)->
+    if tweets?
+      res.render "index",
+        locals:
+          tweets: tweets.tags
+          screenName: req.params.screenName
+    else
+      res.redirect('/')
+
 exports.save = (req, res) ->
-  Tweets.findOne {screenName: req.params.n}, (err, tweets)->
+  Tweets.findOne {screenName: req.params.n.toLowerCase()}, (err, tweets)->
     rectInfo = req.body.tags
     rectInfo.forEach (r, i)->
       rectObj =
@@ -45,7 +57,6 @@ startFetching = (res, screenName, instance)->
     contributor_details: no
 
   twit.getUserTimeline twitterParams, (err, data1) ->
-
     return res.send err  if err
     if data1.length is 0
       return res.send
@@ -100,7 +111,7 @@ startFetching = (res, screenName, instance)->
       maxsize = 36
       instance.tags = []
         
-      for tagItem, i in store.splice(0, 200)
+      for tagItem, i in store.splice(0, 100)
         instance.tags.push
           tag: tagItem[0]
           size: defScale( tagItem[1], mincount, maxcount, minsize, maxsize )

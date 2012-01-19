@@ -1,5 +1,5 @@
 
-  define(["TagCloud", "vendor/jquery.uniform.min"], function(TagCloud) {
+  define(["TagCloud", "LoadingWheel", "vendor/jquery.uniform.min"], function(TagCloud, LoadingWheel) {
     var App;
     return App = (function() {
 
@@ -22,7 +22,7 @@
             });
           }
         });
-        $jqXHR = $.ajax("/save/" + ($("#screen-name-container .inner span").text().replace('@', '')), {
+        $jqXHR = $.ajax("/s/" + ($("#screen-name-container .inner span").text().replace('@', '')), {
           type: 'post',
           data: {
             tags: tagData
@@ -33,64 +33,133 @@
         });
       };
 
-      function App() {
-        var $container, $screenNameField, startFetching;
+      function App(tweetData) {
+        if (tweetData == null) tweetData = null;
         this.setupTypeList();
-        $container = $(".container");
-        $screenNameField = $("#screen-name");
-        $screenNameField.focus(function() {
-          return $screenNameField.parent().addClass('state-focus');
-        });
-        $screenNameField.blur(function() {
-          if ($screenNameField.val() === '') {
-            $screenNameField.parent().removeClass('state-focus');
-            $screenNameField.parent().removeClass('state-valid');
-            return $container.removeClass('ready');
-          }
-        });
-        $screenNameField.keyup(function() {
-          if ($screenNameField.val().length > 0) {
-            $screenNameField.parent().removeClass('state-focus');
-            $screenNameField.parent().addClass('state-valid');
-            return $container.addClass('ready');
-          }
-        });
-        startFetching = function() {
-          var $jqXHR;
-          $jqXHR = $.ajax({
-            url: "/fetch?n=" + ($screenNameField.val().replace('@', ''))
-          });
-          $jqXHR.success(function(data) {
-            var $inner, $nameContainer, tagCloud;
-            var _this = this;
-            if (data.statusCode != null) {
-              return startFetching();
-            } else {
-              $container.addClass('view');
-              $container.removeClass('fetching');
-              $nameContainer = $("<div id='screen-name-container'/>");
-              $inner = $("<span class='inner'></span>");
-              $inner.append($("#icon-twitter"));
-              $inner.append("<span>@" + ($screenNameField.val().replace('@', '')) + "</span>");
-              $nameContainer.append($inner);
-              $container.prepend($nameContainer);
-              setTimeout(function() {
-                return $screenNameField.parents('form').remove();
-              }, 500);
-              return tagCloud = new TagCloud(data.splice(0, 200), 4, 500, 300);
-            }
-          });
-          return $jqXHR.error(function(data) {
-            return console.log(arguments);
-          });
-        };
-        $("#twitter-form").submit(function(e) {
-          e.preventDefault();
-          $container.removeClass('ready');
-          $container.addClass('fetching');
-          return startFetching();
-        });
+        this.attachEvents();
+        this.container = $(".container");
+        this.screenNameField = $("#screen-name");
+        if (tweetData == null) {
+          this.setupLoadingWheel();
+        } else {
+          this.setupPreload(tweetData);
+          this.kickOffTagCloud(tweetData.tweets, tweets.screenName);
+        }
       }
+
+      App.prototype.setupPreload = function(tweetData) {
+        this.container.addClass('view');
+        return this.createLabel(tweetData.screenName);
+      };
+
+      App.prototype.attachEvents = function() {
+        var _this = this;
+        this.container = $(".container");
+        this.screenNameField = $("#screen-name");
+        $("a[href*=like], #like").hover(function() {
+          return $("#like").addClass('hover');
+        }, function() {
+          return $("#like").removeClass('hover');
+        });
+        $("a[href*=what], #what").hover(function() {
+          return $("#what").addClass('hover');
+        }, function() {
+          return $("#what").removeClass('hover');
+        });
+        $("#view-mode").click(function(e) {
+          var $el;
+          e.preventDefault();
+          $el = $("#view-mode");
+          $el.toggleClass('normal-view');
+          return $("#stage").toggleClass('normal-view');
+        });
+        this.screenNameField.focus(function() {
+          return _this.screenNameField.parent().addClass('state-focus');
+        });
+        this.screenNameField.blur(function() {
+          if (_this.screenNameField.val() === '') {
+            _this.screenNameField.parent().removeClass('state-focus');
+            _this.screenNameField.parent().removeClass('state-valid');
+            return _this.container.removeClass('ready');
+          }
+        });
+        this.screenNameField.keyup(function() {
+          if (_this.screenNameField.val().length > 0) {
+            _this.screenNameField.parent().removeClass('state-focus');
+            _this.screenNameField.parent().addClass('state-valid');
+            return _this.container.addClass('ready');
+          }
+        });
+        return $("#twitter-form").submit(function(e) {
+          e.preventDefault();
+          if (_this.screenNameField.val().replace('@', '').length === 0) {
+            retuen(false);
+          }
+          _this.container.removeClass('ready');
+          _this.container.addClass('fetching');
+          return _this.startFetching();
+        });
+      };
+
+      App.prototype.startFetching = function() {
+        var $jqXHR, screenName;
+        var _this = this;
+        screenName = this.screenNameField.val().replace('@', '');
+        $jqXHR = $.ajax({
+          url: "/f?n=" + screenName
+        });
+        $jqXHR.success(function(data) {
+          if (data.statusCode != null) {
+            return _this.startFetching();
+          } else {
+            _this.container.addClass('view');
+            _this.container.removeClass('fetching');
+            _this.createLabel();
+            return setTimeout(function() {
+              _this.screenNameField.parents('form').remove();
+              _this.loadingWheel.doneLoading = true;
+              return _this.kickOffTagCloud(data, screenName);
+            }, 500);
+          }
+        });
+        return $jqXHR.error(function(data) {
+          return console.log(arguments);
+        });
+      };
+
+      App.prototype.createLabel = function(screenName) {
+        var $inner, $nameContainer;
+        if (screenName == null) screenName = null;
+        if (screenName == null) {
+          screenName = this.screenNameField.val().replace('@', '');
+        }
+        $nameContainer = $("<div id='screen-name-container'/>");
+        $inner = $("<span class='inner'></span>");
+        $inner.append($("#icon-twitter"));
+        $inner.append("<a href=\"/" + screenName + "\" target='_blank'>@" + screenName + "</a>");
+        $nameContainer.append($inner);
+        return this.container.prepend($nameContainer);
+      };
+
+      App.prototype.kickOffTagCloud = function(data, screenName) {
+        this.tagCloud = new TagCloud(data.splice(0, 100), 4, 500, 500, "AXIS Std");
+        history.pushState({}, "TweetCloud | @" + screenName, "" + (screenName.toLowerCase()));
+        return this.tagCloud.bind('onLoopEnd', function() {
+          var _this = this;
+          return setTimeout(function() {
+            $("#stage").addClass('normal-view');
+            $("#view-mode").addClass('ready').addClass('normal-view');
+            return $("#view-mode .arrow").delay(1000).fadeOut(1000, function() {
+              return $(this).remove();
+            });
+          }, 500);
+        });
+      };
+
+      App.prototype.setupLoadingWheel = function() {
+        this.loadingWheel = new LoadingWheel();
+        return this.loadingWheel.doneLoading = false;
+      };
 
       App.prototype.setupTypeList = function() {
         var dom, fontName, list, options, val, weight, _i, _len, _ref;
