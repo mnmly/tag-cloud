@@ -66,11 +66,11 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         if $el.hasClass 'normal-view'
           $("#stage .tag").each ->
             style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '')
-            $(this).style('style', style)
+            $(this).attr('style', style)
         else
           $("#stage .tag").each ->
             style = $(this).attr('style').replace('translate3d', 'rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d')
-            $(this).style('style', style)
+            $(this).attr('style', style)
           
         $("#stage").toggleClass 'normal-view'
 

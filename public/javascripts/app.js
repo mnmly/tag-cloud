@@ -80,13 +80,13 @@
             $("#stage .tag").each(function() {
               var style;
               style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '');
-              return $(this).style('style', style);
+              return $(this).attr('style', style);
             });
           } else {
             $("#stage .tag").each(function() {
               var style;
               style = $(this).attr('style').replace('translate3d', 'rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d');
-              return $(this).style('style', style);
+              return $(this).attr('style', style);
             });
           }
           return $("#stage").toggleClass('normal-view');
