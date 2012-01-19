@@ -1,10 +1,30 @@
 #phraser = require('./lib/phrasar')
 twitter = require('ntwitter')
 mecab = require('./../node_modules/node-mecab')
-Tweets = require('./../models/Tweets')
+Tweets = require('./../models/Tweets').Tweets
 
 exports.index = (req, res) ->
   res.render "index"
+
+exports.save = (req, res) ->
+  Tweets.findOne {screenName: req.params.n}, (err, tweets)->
+    rectInfo = req.body.tags
+    rectInfo.forEach (r, i)->
+      rectObj =
+        top: r.top
+        left: r.left
+        rotation: r.rotation
+        width: r.width
+        height: r.height
+        fontFamily: r.fontFamily
+        fontSize: r.fontSize
+      tweets.tags[i].rect = rectObj
+    
+    tweets.save ->
+      console.log tweets.tags[0].rect
+      res.send
+        msg: 'Saved'
+
 
 twit = new twitter
   consumar_key: "79DmvBwydqEd5PfqZkOVg"
@@ -13,7 +33,6 @@ twit = new twitter
   access_token_secret: '7D6clBZQf2UDF6Os4aoWqoOPvZ5pSqtMeYdr6F8'
 
 cache = []
-
 
 startFetching = (res, screenName, instance)->
 
@@ -28,6 +47,9 @@ startFetching = (res, screenName, instance)->
   twit.getUserTimeline twitterParams, (err, data1) ->
 
     return res.send err  if err
+    if data1.length is 0
+      return res.send
+        'msg': "No Tweets.."
 
     twitterParams.since_id = data1[data1.length - 1].id
       
@@ -45,7 +67,9 @@ startFetching = (res, screenName, instance)->
         .replace(/^via/gi, ' ')
         .replace(/\@\w+/gi, ' ')
         .replace(/\-/gi, ' ')
-
+        .replace(/[\(\)\[\]]/gi, ' ')
+        .replace(/['"`:\.\|]/gi, ' ')
+      
       elements = mecab.parse tweets
       elementStore = []
 
@@ -70,13 +94,13 @@ startFetching = (res, screenName, instance)->
       defScale = (count, mincount, maxcount, minsize, maxsize)->
         return ( 0.5 + minsize + Math.pow( (maxsize - minsize) * ( count * 1.3 / ( maxcount - mincount )), 0.98 ) ) | 0
       
-      tags = []
       maxcount = store[0][1]
       mincount = store[store.length - 1][1]
       minsize = 1
       maxsize = 36
-
-      for tagItem in store.splice(0, 300)
+      instance.tags = []
+        
+      for tagItem, i in store.splice(0, 200)
         instance.tags.push
           tag: tagItem[0]
           size: defScale( tagItem[1], mincount, maxcount, minsize, maxsize )
@@ -91,18 +115,21 @@ exports.fetch = (req, res) ->
     res.send
       msg: "n is required"
   else
-    screenName = req.query.n
+    screenName = req.query.n.toLowerCase()
     Tweets.findOne {screenName: screenName}, (err, tweets)->
       if tweets?
         isTweetExists = yes
         timeDiff = new Date() - tweets.updatedAt
         daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
         # Go to twittter if it is below 7 days
-        #
         if tweets.tags.length is 0
           return startFetching(res, screenName, tweets)
-
+        
+        
         if daysDiff < 7
+          if req.query.force? and req.query.force
+            return Tweets.update _id: tweets._id, {$set: tags: []}, (err, uTweets)->
+              return startFetching(res, screenName, tweets)
           res.send tweets.tags
         else
           return startFetching(res, screenName, tweets)

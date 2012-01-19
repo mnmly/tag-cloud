@@ -3,24 +3,30 @@ require.config
   priority:[
    "http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"
   ]
+
   paths:
     Tag: "tag-cloud/Tag"
     Rect: "tag-cloud/Rect"
     TagCloud: "tag-cloud/TagCloud"
-    Evented: "tag-cloud/Evented"
 
 require [
   'app'
   'loading-wheel'
 ], (App, LoadingWheel)->
+  
   $(document).ready ->
-    app = new App
+    window.app = new App
     loadingWheel = new LoadingWheel
     count = 0
     (animloop = ->
       requestAnimFrame animloop
       loadingWheel.render(count++)
     )()
+  
+  #require [ 'font-plus-manager' ], (FontPlusManager)->
+  #  console.log arguments
+  #  new FontPlusManager
+
 
 
 window.requestAnimFrame = (->
