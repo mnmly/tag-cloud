@@ -48,7 +48,7 @@
           this.setupLoadingWheel();
         } else {
           this.setupPreload(tweetData);
-          this.kickOffTagCloud(tweetData.tweets, tweetData.screenName);
+          this.prepareTagCloud(tweetData.tweets, tweetData.screenName);
         }
       }
 
@@ -95,7 +95,7 @@
             return _this.container.addClass('ready');
           }
         });
-        return $("#twitter-form").submit(function(e) {
+        $("#twitter-form").submit(function(e) {
           e.preventDefault();
           if (_this.screenNameField.val().replace('@', '').length === 0) {
             retuen(false);
@@ -103,6 +103,9 @@
           _this.container.removeClass('ready');
           _this.container.addClass('fetching');
           return _this.startFetching();
+        });
+        return this.bind('onFontReady', function(fontName) {
+          return _this.kickoffTagCloud(fontName);
         });
       };
 
@@ -123,7 +126,7 @@
             return setTimeout(function() {
               _this.screenNameField.parents('form').remove();
               _this.loadingWheel.doneLoading = true;
-              return _this.kickOffTagCloud(data, screenName);
+              return _this.prepareTagCloud(data, screenName);
             }, 500);
           }
         });
@@ -146,12 +149,17 @@
         return this.container.prepend($nameContainer);
       };
 
-      App.prototype.kickOffTagCloud = function(data, screenName) {
-        data = data.splice(0, 100);
-        this.trigger('onFetchDone', data);
-        this.tagCloud = new TagCloud(data, 4, 500, 500, "AXIS Std");
-        history.pushState({}, "TweetCloud | @" + screenName, "" + (screenName.toLowerCase()));
-        return this.tagCloud.bind('onLoopEnd', function() {
+      App.prototype.kickoffTagCloud = function(fontName) {
+        if (fontName == null) fontName = "AXIS Std";
+        this.tagCloud = new TagCloud(this.data, 4, 500, 500, fontName);
+        return this.tagCloud.bind("onLoopEnd", this.onLoopEndCallBack);
+      };
+
+      App.prototype.prepareTagCloudTag = function(data, screenName) {
+        var _this = this;
+        this.data = data.splice(0, 100);
+        this.screenName = screenName;
+        this.onLoopEndCallBack = function() {
           var _this = this;
           return setTimeout(function() {
             $("#stage").addClass('normal-view');
@@ -160,7 +168,12 @@
               return $(this).remove();
             });
           }, 500);
-        });
+        };
+        history.pushState({}, "TweetCloud | @" + screenName, "" + (screenName.toLowerCase()));
+        this.isFontLoaded = false;
+        return setInterval(function() {
+          if (_this.isFontLoaded) return _this.kickoffTagCloud();
+        }, 5000);
       };
 
       App.prototype.setupLoadingWheel = function() {
