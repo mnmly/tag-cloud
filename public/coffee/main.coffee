@@ -33,7 +33,7 @@ require [
 
     setupInitialFont = (data)->
       text = (t.tag for t in data)
-      _initial = fontPlusUtils.getFontForText('RodinPro-EB', text.join(''))
+      _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''))
       window.fontPlusUtils.bind 'fontactive', (_uid, fontFamily, fontDescription, text)->
         if _initial is _uid
           window.app.trigger( 'onFontReady', fontFamily )
