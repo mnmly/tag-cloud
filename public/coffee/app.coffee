@@ -38,7 +38,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         @setupLoadingWheel()
       else
         @setupPreload(tweetData)
-        @prepareTagCloud(tweetData.tweets, tweetData.screenName)
+        @prepareTagCloud(tweetData.tweets, tweetData.screenName, yes)
         #@kickOffTagCloud(tweetData.tweets, tweetData.screenName)
 
     setupPreload: (tweetData)->
@@ -106,7 +106,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         @isFontLoaded = no
         setTimeout =>
           @kickoffTagCloud(fontName)
-        , 2000
+        , 1500
     
     startFetching: ->
       screenName = @screenNameField.val().replace('@', '')
@@ -144,10 +144,11 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
       @tagCloud = new TagCloud @data, 4, 500, 500, fontName
       @tagCloud.bind "onLoopEnd", @onLoopEndCallBack
 
-    prepareTagCloud: (data, screenName)->
+    prepareTagCloud: (data, screenName, preloaded = no)->
       @data = data.splice(0, 100)
       @screenName = screenName
-      @trigger('onFetchDone', @data)
+      unless preloaded
+        @trigger('onFetchDone', @data)
       @onLoopEndCallBack = ->
         setTimeout =>
           $("#stage").addClass 'normal-view'
