@@ -106,7 +106,7 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         @isFontLoaded = no
         setTimeout =>
           @kickoffTagCloud(fontName)
-        , 1500
+        , 2000
     
     startFetching: ->
       screenName = @screenNameField.val().replace('@', '')

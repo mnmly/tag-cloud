@@ -122,7 +122,7 @@
           _this.isFontLoaded = false;
           return setTimeout(function() {
             return _this.kickoffTagCloud(fontName);
-          }, 1500);
+          }, 2000);
         });
       };
 
