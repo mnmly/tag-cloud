@@ -41,7 +41,7 @@
         });
       };
       if (window.tweetData != null) {
-        data = window.tweetData.tweets.splice(0, 100);
+        data = window.tweetData.tweets.splice(0, 150);
         return setupInitialFont(data);
       } else {
         return app.bind('onFetchDone', setupInitialFont);

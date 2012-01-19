@@ -111,7 +111,7 @@ startFetching = (res, screenName, instance)->
       maxsize = 36
       instance.tags = []
         
-      for tagItem, i in store.splice(0, 100)
+      for tagItem, i in store.splice(0, 150)
         instance.tags.push
           tag: tagItem[0]
           size: defScale( tagItem[1], mincount, maxcount, minsize, maxsize )

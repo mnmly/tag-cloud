@@ -129,7 +129,7 @@
         minsize = 1;
         maxsize = 36;
         instance.tags = [];
-        _ref = store.splice(0, 100);
+        _ref = store.splice(0, 150);
         for (i = 0, _len2 = _ref.length; i < _len2; i++) {
           tagItem = _ref[i];
           instance.tags.push({
