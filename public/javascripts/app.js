@@ -76,7 +76,7 @@
           e.preventDefault();
           $el = $("#view-mode");
           $el.toggleClass('normal-view');
-          if ($el.hasClass('normal-view')) {
+          if (!$el.hasClass('normal-view')) {
             $("#stage .tag").each(function() {
               var style;
               style = $(this).attr('style').replace('rotate(60deg) skew(0deg, -30deg) scale(1, 1.16)', '');
