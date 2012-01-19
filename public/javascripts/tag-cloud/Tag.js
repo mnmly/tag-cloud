@@ -26,7 +26,7 @@
         this.size = size;
         this.rotation = rotation;
         this.fontName = fontName != null ? fontName : "AXIS Std";
-        this.fontZoom = fontZoom != null ? fontZoom : 3;
+        this.fontZoom = fontZoom != null ? fontZoom : 2.5;
         if (count++ === 0) {
           Tag.stage = document.getElementById('stage');
           Tag.hitTestCanvas = document.getElementById('hit-test');
@@ -78,8 +78,9 @@
             top: top
           };
         }
-        rule += "#" + this.cid + ".tag{\n  top: -100px;\n  font-size: " + (this.fontZoom * this.size) + "px;\n  font-size: " + (this.fontZoom * this.size / 10) + "rem;\n  height: " + (this.fontZoom * this.size) + "px;\n  width: " + this.el.offsetWidth + "px;\n  color: " + (this.randomColor(0, 0, 0)) + ";\n  -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  -moz-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  opacity: 0;\n}\n#" + this.cid + ".tag.ready{\n  top: 0px;\n  opacity: 1;\n}\n#stage.normal-view #" + this.cid + ".tag{\n  -webkit-transform: translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  -moz-transform:translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  transform: scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n}\n\n";
+        rule += "#" + this.cid + ".tag{\n  top: -100px;\n  font-size: " + (this.fontZoom * this.size) + "px;\n  font-size: " + (this.fontZoom * this.size / 10) + "rem;\n  height: " + (this.fontZoom * this.size) + "px;\n  width: " + this.el.offsetWidth + "px;\n  color: black; /*" + (this.randomColor(1, 72, 155)) + ";*/\n  -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  opacity: 0;\n}\n#" + this.cid + ".tag.ready{\n  top: 0px;\n  opacity: 1;\n}\n#stage.normal-view #" + this.cid + ".tag{\n  -webkit-transform: translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  transform: scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n}\n\n";
         Tag.stylesheet.innerHTML = rule;
+        $el.append("<span>" + this.tag + "</span>");
         setTimeout(function() {
           return _this.el.className = 'tag ready';
         }, 500);
@@ -126,8 +127,10 @@
             hitTestCanvas = Tag.hitTestCanvas;
             hitTestCanvas.width = intersects.right - intersects.left;
             hitTestCanvas.height = intersects.bottom - intersects.top;
-            hitTestCanvas.style.top = intersects.top + "px";
-            hitTestCanvas.style.left = intersects.left + 'px';
+            if (this.debug) {
+              hitTestCanvas.style.top = intersects.top + "px";
+              hitTestCanvas.style.left = intersects.left + 'px';
+            }
             stage = Tag.stage;
             if (hitTestCanvas.width === 0 || hitTestCanvas.height === 0) {
               if (this.debug) {
@@ -141,7 +144,7 @@
             ctx.fillStyle = "rgba(0, 0, 0, .8)";
             ctx.strokeStyle = "rgba(0, 0, 0, .8)";
             ctx.lineWidth = 5;
-            ctx.font = "bold " + this.el.style.fontSize + " '" + this.fontName + "'";
+            ctx.font = "bold " + this.el.style.fontSize + " " + this.fontName;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             translateLeftThis = 0;

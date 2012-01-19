@@ -11,9 +11,27 @@
     return res.render("index");
   };
 
+  exports.user = function(req, res, next) {
+    if (req.params.screenName.search(/\./) > -1) return next();
+    return Tweets.findOne({
+      screenName: req.params.screenName.toLowerCase()
+    }, function(err, tweets) {
+      if (tweets != null) {
+        return res.render("index", {
+          locals: {
+            tweets: tweets.tags,
+            screenName: req.params.screenName
+          }
+        });
+      } else {
+        return res.redirect('/');
+      }
+    });
+  };
+
   exports.save = function(req, res) {
     return Tweets.findOne({
-      screenName: req.params.n
+      screenName: req.params.n.toLowerCase()
     }, function(err, tweets) {
       var rectInfo;
       rectInfo = req.body.tags;
@@ -111,7 +129,7 @@
         minsize = 1;
         maxsize = 36;
         instance.tags = [];
-        _ref = store.splice(0, 200);
+        _ref = store.splice(0, 100);
         for (i = 0, _len2 = _ref.length; i < _len2; i++) {
           tagItem = _ref[i];
           instance.tags.push({

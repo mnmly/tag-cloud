@@ -8,19 +8,21 @@ require.config
     Tag: "tag-cloud/Tag"
     Rect: "tag-cloud/Rect"
     TagCloud: "tag-cloud/TagCloud"
+    Evented: "tag-cloud/Evented"
+    LoadingWheel: "loading-wheel"
 
 require [
   'app'
-  'loading-wheel'
-], (App, LoadingWheel)->
+], (App)->
   
   $(document).ready ->
-    window.app = new App
-    loadingWheel = new LoadingWheel
+    window.app = app = new App(window.tweetData)
     count = 0
     (animloop = ->
+      if (not app.loadingWheel?) or app.loadingWheel.doneLoading
+        return
       requestAnimFrame animloop
-      loadingWheel.render(count++)
+      app.loadingWheel.render(count++)
     )()
   
   #require [ 'font-plus-manager' ], (FontPlusManager)->

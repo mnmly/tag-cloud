@@ -1,6 +1,6 @@
-define ['Tag', 'Rect'], (Tag, Rect)->
+define ['Tag', 'Rect', "Evented"], (Tag, Rect, Evented)->
 
-  class TagCloud
+  class TagCloud extends Evented
     # LAYOUTS
     LAYOUT_HORIZONTAL = 0
     LAYOUT_VERTICAL = 1
@@ -25,9 +25,26 @@ define ['Tag', 'Rect'], (Tag, Rect)->
 
       spl = 1
       dx = dy = 0
+      step = 0
 
       exposed =
         next: ->
+          if step < spl * 2
+            if step is spl
+              direction = directions[(spl - 1) % 4]
+            dx += direction[0] * STEP_SIZE * DEFAULT_STEP
+            dy += direction[1] * STEP_SIZE * DEFAULT_STEP
+            obj =
+              dx: dx
+              dy: dy
+            step++
+            return obj
+          else
+            step = 0
+            spl++
+            @next()
+
+          ###
           for step in [ 0...spl * 2 ]
             if step is spl
               direction = directions[(spl - 1) % 4]
@@ -37,7 +54,7 @@ define ['Tag', 'Rect'], (Tag, Rect)->
               dx: dx
               dy: dy
             return obj
-          spl += 1
+          spl += 1###
 
 
     _archimedeanSpiral = (reverse)->
@@ -58,6 +75,7 @@ define ['Tag', 'Rect'], (Tag, Rect)->
     STEP_SIZE = 2 #relative to base step size of each spiral function
 
     constructor: (tagList, layout, width = 500, height = 300, fontName='Helvetica')->
+      super
       canvas = document.createElement('canvas')
       canvas.style.position = 'absolute'
       canvas.setAttribute('id', 'hit-test')
@@ -84,7 +102,7 @@ define ['Tag', 'Rect'], (Tag, Rect)->
 
       i = 0
       isLoopDone = no
-      onLoopEnd = -> isLoopDone = yes
+      onLoopEnd = =>  @trigger('onLoopEnd')
       lastTop = 0
       topMost = 0
       iterationFn = (loopEntity)=>
@@ -112,30 +130,12 @@ define ['Tag', 'Rect'], (Tag, Rect)->
         if y < 0 then y = 0
         y = @randInt(y * LOWER_START, y * UPPER_START)
         currentTag.rect.top = y
-        
         @searchPlace(currentTag, tagStore, sizeRect, spiral, flip)
-        if topMost > currentTag.rect.top
-          while topMost - currentTag > 250
-            x = sizeRect.width - currentTag.rect.width
-            if x < 0 then x = 0
-            x = @randInt(x * LOWER_START, x * UPPER_START)
-            currentTag.rect.left = x
-
-            y = sizeRect.height - currentTag.rect.height
-            if y < 0 then y = 0
-            y = @randInt(y * LOWER_START, y * UPPER_START)
-            currentTag.rect.top = y
-            @searchPlace(currentTag, tagStore, sizeRect, spiral, flip)
-          topMost = currentTag.rect.top
-
         tagStore.push(currentTag)
         setTimeout ->
           stage = document.getElementById('stage')
           {top, left} = currentTag.update()
-          if top < -550
-            currentTag.el.display = "none"
-            return loopEntity.next()
-          stage.style.marginTop = ( -top / 3 ) + "px"
+          stage.style.marginTop = -( top / 5 ) + "px"
           stage.style.left = ( top / 2 ) + "px"
           loopEntity.next()
         , 300

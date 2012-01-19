@@ -1,5 +1,6 @@
 define [ "vendor/jquery.easing.1.3" ], ->
-  class App
+
+  class LoadingWheel
     size = 30
     shapes =
       circle:
@@ -85,7 +86,7 @@ define [ "vendor/jquery.easing.1.3" ], ->
       @context.translate(-size / 2, -size / 2)
       @context.beginPath()
       @context.fillStyle = 'rgba(0, 0, 0, .5)'
-
+      
       @tweenShape(t)
 
       #@context.moveTo( (0.5 + @xc[0]) | 0, (0.5 + @yc[0]) | 0)

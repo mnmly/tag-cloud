@@ -14,7 +14,7 @@ define ['Rect'], (Rect)->
       t.rect.top = tagData.top
       t.rect.left = tagData.left
       
-    constructor: (@tag, @size, @rotation, @fontName = "AXIS Std", @fontZoom = 3)->
+    constructor: (@tag, @size, @rotation, @fontName = "AXIS Std", @fontZoom = 2.5)->
       if count++ is 0
         Tag.stage = document.getElementById('stage')
         Tag.hitTestCanvas = document.getElementById('hit-test')
@@ -68,6 +68,7 @@ define ['Rect'], (Rect)->
           left: left
           top: top
       #$el.attr('style', '')
+    
       rule += """
         ##{@cid}.tag{
           top: -100px;
@@ -75,10 +76,8 @@ define ['Rect'], (Rect)->
           font-size: #{@fontZoom * @size / 10}rem;
           height: #{@fontZoom * @size}px;
           width: #{@el.offsetWidth}px;
-          color: #{@randomColor(0, 0, 0)};
+          color: black; /*#{@randomColor(1, 72, 155)};*/
           -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
-          -moz-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
-          transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
           opacity: 0;
         }
         ##{@cid}.tag.ready{
@@ -87,14 +86,12 @@ define ['Rect'], (Rect)->
         }
         #stage.normal-view ##{@cid}.tag{
           -webkit-transform: translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
-          -moz-transform:translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
           transform: scale(1, 1.16) translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
         }
         \n
       """
       Tag.stylesheet.innerHTML = rule
-      #@el.style.top = "-100px"
-      #@el.style.webkitTransform = "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" }"
+      $el.append("<span>#{@tag}</span>")
       setTimeout =>
         #Tag.stylesheet.innerHTML = rule
         @el.className = 'tag ready'
@@ -141,8 +138,9 @@ define ['Rect'], (Rect)->
           hitTestCanvas = Tag.hitTestCanvas
           hitTestCanvas.width = intersects.right - intersects.left
           hitTestCanvas.height = intersects.bottom - intersects.top
-          hitTestCanvas.style.top = intersects.top + "px"
-          hitTestCanvas.style.left = intersects.left + 'px'
+          if @debug
+            hitTestCanvas.style.top = intersects.top + "px"
+            hitTestCanvas.style.left = intersects.left + 'px'
           
           stage = Tag.stage
 
@@ -156,7 +154,7 @@ define ['Rect'], (Rect)->
           ctx.fillStyle = "rgba(0, 0, 0, .8)"
           ctx.strokeStyle = "rgba(0, 0, 0, .8)"
           ctx.lineWidth = 5
-          ctx.font = "bold #{@el.style.fontSize} '#{@fontName}'"
+          ctx.font = "bold #{@el.style.fontSize} #{@fontName}"
           ctx.textAlign = 'left'
           ctx.textBaseline = 'top'
           

@@ -1,5 +1,5 @@
 (function() {
-  var allowCrossDomain, app, auth, compile, express, nib, routes, stylus;
+  var app, auth, compile, express, nib, routes, stylus;
 
   express = require("express");
 
@@ -13,13 +13,6 @@
 
   auth = express.basicAuth('d', 'nonono');
 
-  allowCrossDomain = function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
-    return next();
-  };
-
   compile = function(str, path) {
     return stylus(str).set("filename", path).set("compress", true).use(nib());
   };
@@ -29,7 +22,6 @@
     app.set("view engine", "jade");
     app.use(express.bodyParser());
     app.use(express.methodOverride());
-    app.use(allowCrossDomain);
     app.use(app.router);
     app.use(stylus.middleware({
       src: __dirname + "/public",
@@ -51,9 +43,11 @@
 
   app.get("/", auth, routes.index);
 
-  app.get("/fetch", routes.fetch);
+  app.get("/f", routes.fetch);
 
-  app.post("/save/:n", routes.save);
+  app.post("/s/:n", routes.save);
+
+  app.get("/:screenName", routes.user);
 
   app.listen(4010);
 
