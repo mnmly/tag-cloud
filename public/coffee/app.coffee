@@ -36,7 +36,8 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         @setupLoadingWheel()
       else
         @setupPreload(tweetData)
-        @kickOffTagCloud(tweetData.tweets, tweetData.screenName)
+        @prepareTagCloud(tweetData.tweets, tweetData.screenName)
+        #@kickOffTagCloud(tweetData.tweets, tweetData.screenName)
 
     setupPreload: (tweetData)->
       @container.addClass 'view'
@@ -88,6 +89,9 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
         @container.addClass 'fetching'
         @startFetching()
 
+      @bind 'onFontReady', (fontName)=>
+        @kickoffTagCloud(fontName)
+    
     startFetching: ->
       screenName = @screenNameField.val().replace('@', '')
       $jqXHR = $.ajax url: "/f?n=#{screenName}"
@@ -102,7 +106,8 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
           setTimeout =>
             @screenNameField.parents('form').remove()
             @loadingWheel.doneLoading = yes
-            @kickOffTagCloud(data, screenName)
+            @prepareTagCloud(data, screenName)
+            #@kickOffTagCloud(data, screenName)
           , 500
       
       $jqXHR.error (data)->
@@ -119,12 +124,14 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
       $nameContainer.append $inner
       @container.prepend $nameContainer
 
-    kickOffTagCloud: (data, screenName)->
-      data = data.splice(0, 100)
-      @trigger('onFetchDone', data)
-      @tagCloud = new TagCloud data, 4, 500, 500, "AXIS Std"
-      history.pushState({}, "TweetCloud | @#{screenName}", "#{screenName.toLowerCase()}")
-      @tagCloud.bind 'onLoopEnd', ->
+    kickoffTagCloud: (fontName = "AXIS Std")->
+      @tagCloud = new TagCloud @data, 4, 500, 500, fontName
+      @tagCloud.bind "onLoopEnd", @onLoopEndCallBack
+
+    prepareTagCloudTag: (data, screenName)->
+      @data = data.splice(0, 100)
+      @screenName = screenName
+      @onLoopEndCallBack = ->
         setTimeout =>
           $("#stage").addClass 'normal-view'
           $("#view-mode").addClass('ready')
@@ -132,8 +139,15 @@ define [ "TagCloud", "LoadingWheel", "Evented", "vendor/jquery.uniform.min" ], (
           
           $("#view-mode .arrow").delay(1000).fadeOut 1000, ->
             $(this).remove()
-
         , 500
+
+      history.pushState({}, "TweetCloud | @#{screenName}", "#{screenName.toLowerCase()}")
+      @isFontLoaded = no
+      # If the font is not loaded after 5 seconds go with default
+      setInterval =>
+        if @isFontLoaded
+          @kickoffTagCloud()
+      , 5000
     
     setupLoadingWheel: ->
       @loadingWheel = new LoadingWheel()

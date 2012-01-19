@@ -21,6 +21,11 @@
         requestAnimFrame(animloop);
         return app.loadingWheel.render(count++);
       })();
+      app.bind('onFetchDone', function(data) {
+        if (window.fontPlusUtils == null) {
+          return app.bind('onFontPlusReady', function() {});
+        }
+      });
       return require(['fontplus.utils', "https://ajax.googleapis.com/ajax/libs/webfont/1.0.24/webfont.js", 'http://webfont.fontplus.jp/accessor/script/fontplus.js?LyzUQoPX3yA%3D'], function(FontPlusUtils) {
         return app.bind('onFetchDone', function(data) {
           var fontPlusUtils, t, text, _initial;
@@ -36,7 +41,7 @@
           })();
           _initial = fontPlusUtils.getFontForText('RodinPro-DB', text.join(''));
           return fontPlusUtils.bind('fontactive', function(_uid, fontFamily, fontDescription, text) {
-            if (_initial === _uid) return console.log("Yay");
+            if (_initial === _uid) return app.trigger('onFontReady', fontFamily);
           });
         });
       });
