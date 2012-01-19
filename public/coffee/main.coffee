@@ -24,10 +24,12 @@ require [
       requestAnimFrame animloop
       app.loadingWheel.render(count++)
     )()
-  
-  #require [ 'font-plus-manager' ], (FontPlusManager)->
-  #  console.log arguments
-  #  new FontPlusManager
+  ###
+  require [ 'font-plus-manager' ], (FontPlusManager)->
+    console.log arguments
+    app.bind 'onFetchDone', (data)->
+      
+    fontPlusManger  = new FontPlusManager###
 
 
 
