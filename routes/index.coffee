@@ -10,7 +10,7 @@ exports.user = (req, res, next) ->
   if req.params.screenName.search(/\./) > -1
     return next()
   Tweets.findOne {screenName: req.params.screenName.toLowerCase()}, (err, tweets)->
-    if tweets?
+    if tweets? and tweets.tags.length > 0
       res.render "index",
         locals:
           tweets: tweets.tags
