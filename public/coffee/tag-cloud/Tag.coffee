@@ -38,7 +38,7 @@ define ['Rect'], (Rect)->
 
     update: (opacity = 1)->
       
-      rule = Tag.stylesheet.innerHTML
+      #rule = Tag.stylesheet.innerHTML
       
       top = ( 0.5 + @rect.top ) | 0
       left = ( 0.5 + @rect.left ) | 0
@@ -68,7 +68,7 @@ define ['Rect'], (Rect)->
           left: left
           top: top
       #$el.attr('style', '')
-    
+      ###
       rule += """
         ##{@cid}.tag{
           top: -100px;
@@ -76,7 +76,7 @@ define ['Rect'], (Rect)->
           font-size: #{@fontZoom * @size / 10}rem;
           height: #{@fontZoom * @size}px;
           width: #{@el.offsetWidth}px;
-          color: black; /*#{@randomColor(1, 72, 155)};*/
+          color: black; 
           -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
           opacity: 0;
         }
@@ -90,10 +90,21 @@ define ['Rect'], (Rect)->
         }
         \n
       """
-      Tag.stylesheet.innerHTML = rule
+      ###
+      $el.css
+        top: -100
+        fontSize: "#{@fontZoom * @size}px"
+        #font-size: #{@fontZoom * @size / 10}rem;
+        height: "#{@fontZoom * @size}px"
+        width: "#{@el.offsetWidth}px"
+        color: "black"
+        '-webkit-transform': "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" }"
+        opacity: 0
+      #Tag.stylesheet.innerHTML = rule
       $el.append("<span>#{@tag}</span>")
       setTimeout =>
         #Tag.stylesheet.innerHTML = rule
+        @el.style.opacity = 1
         @el.className = 'tag ready'
       , 500
       #@el.style.webkitTransform = "translate3d(#{pos.left}px, #{pos.top}px, 0) #{if @rotation is 90 then "rotate(90deg)" else "" }"

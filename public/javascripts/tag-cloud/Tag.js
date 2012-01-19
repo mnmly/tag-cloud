@@ -49,10 +49,9 @@
       }
 
       Tag.prototype.update = function(opacity) {
-        var $el, left, pos, randomLeft, randomTop, rule, stage, stageWidth, top;
+        var $el, left, pos, randomLeft, randomTop, stage, stageWidth, top;
         var _this = this;
         if (opacity == null) opacity = 1;
-        rule = Tag.stylesheet.innerHTML;
         top = (0.5 + this.rect.top) | 0;
         left = (0.5 + this.rect.left) | 0;
         $el = $(this.el);
@@ -78,10 +77,41 @@
             top: top
           };
         }
-        rule += "#" + this.cid + ".tag{\n  top: -100px;\n  font-size: " + (this.fontZoom * this.size) + "px;\n  font-size: " + (this.fontZoom * this.size / 10) + "rem;\n  height: " + (this.fontZoom * this.size) + "px;\n  width: " + this.el.offsetWidth + "px;\n  color: black; /*" + (this.randomColor(1, 72, 155)) + ";*/\n  -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  opacity: 0;\n}\n#" + this.cid + ".tag.ready{\n  top: 0px;\n  opacity: 1;\n}\n#stage.normal-view #" + this.cid + ".tag{\n  -webkit-transform: translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n  transform: scale(1, 1.16) translate(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : "") + ";\n}\n\n";
-        Tag.stylesheet.innerHTML = rule;
+        /*
+              rule += """
+                ##{@cid}.tag{
+                  top: -100px;
+                  font-size: #{@fontZoom * @size}px;
+                  font-size: #{@fontZoom * @size / 10}rem;
+                  height: #{@fontZoom * @size}px;
+                  width: #{@el.offsetWidth}px;
+                  color: black; 
+                  -webkit-transform: rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+                  opacity: 0;
+                }
+                ##{@cid}.tag.ready{
+                  top: 0px;
+                  opacity: 1;
+                }
+                #stage.normal-view ##{@cid}.tag{
+                  -webkit-transform: translate3d(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+                  transform: scale(1, 1.16) translate(#{pos.left}px, #{pos.top}px, 0px) #{if @rotation is 90 then "rotate(90deg)" else "" };
+                }
+                \n
+              """
+        */
+        $el.css({
+          top: -100,
+          fontSize: "" + (this.fontZoom * this.size) + "px",
+          height: "" + (this.fontZoom * this.size) + "px",
+          width: "" + this.el.offsetWidth + "px",
+          color: "black",
+          '-webkit-transform': "rotate(60deg) skew(0deg, -30deg) scale(1, 1.16) translate3d(" + pos.left + "px, " + pos.top + "px, 0px) " + (this.rotation === 90 ? "rotate(90deg)" : ""),
+          opacity: 0
+        });
         $el.append("<span>" + this.tag + "</span>");
         setTimeout(function() {
+          _this.el.style.opacity = 1;
           return _this.el.className = 'tag ready';
         }, 500);
         return {
