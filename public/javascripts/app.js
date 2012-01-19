@@ -108,7 +108,7 @@
           _this.isFontLoaded = false;
           return setTimeout(function() {
             return _this.kickoffTagCloud(fontName);
-          }, 500);
+          }, 1000);
         });
       };
 
