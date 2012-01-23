@@ -2,10 +2,11 @@ express = require("express")
 routes = require("./routes")
 stylus = require('stylus')
 nib = require('nib')
+fs = require('fs')
+config = JSON.parse(fs.readFileSync(__dirname + "/config.json", encoding="utf8"))
 
 app = module.exports = express.createServer()
 #auth = express.basicAuth 'd', 'nonono'
-
 
 compile = (str, path) ->
   stylus(str).set("filename", path).set("compress", true).use nib()
@@ -35,6 +36,6 @@ app.get "/f", routes.fetch
 app.post "/s/:n", routes.save
 app.get "/:screenName", routes.user
 
-app.listen 4010
+app.listen parseInt( config.port, 10 )
 console.log "Express server listening on port %d in %s mode", app.address().port, app.settings.env
 
