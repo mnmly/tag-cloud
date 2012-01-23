@@ -2,3 +2,4 @@
 node_modules
 .monitor
 .nodemonignore
+config.json
