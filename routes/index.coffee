@@ -2,6 +2,7 @@
 twitter = require('ntwitter')
 mecab = require('./../node_modules/node-mecab')
 Tweets = require('./../models/Tweets').Tweets
+fs = require('fs')
 
 exports.index = (req, res) ->
   res.render "index"
@@ -33,16 +34,13 @@ exports.save = (req, res) ->
       tweets.tags[i].rect = rectObj
     
     tweets.save ->
-      console.log tweets.tags[0].rect
       res.send
         msg: 'Saved'
 
+twitterConfig = JSON.parse(fs.readFileSync(process.cwd() + "/config.json", encoding="utf8")).twitter
 
-twit = new twitter
-  consumar_key: "79DmvBwydqEd5PfqZkOVg"
-  consumer_secret: 'VfhqcffJJa4Gic12CAO4sbs9gOs9dX4FeHIrSMJRUvE'
-  access_token_key: '15055740-dpoGKeXm5rqRQN2LOA9GqbVhuaMV7TFEWCMCRiyj4'
-  access_token_secret: '7D6clBZQf2UDF6Os4aoWqoOPvZ5pSqtMeYdr6F8'
+twit = new twitter twitterConfig
+  
 
 cache = []
 
