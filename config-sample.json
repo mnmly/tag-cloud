@@ -1,0 +1,18 @@
+{
+   "development":{
+      "mongo_uri":"mongodb://localhost/tagcloud-dev"
+   },
+   "staging":{
+      "mongo_uri":"mongodb://localhost/tagcloud-staging"
+   },
+   "production":{
+      "mongo_uri":"mongodb://localhost/tagcloud-production"
+   },
+   "twitter":{
+      "consumar_key":"XXXXXXXXXXXXXXXXXXXXX",
+      "consumer_secret":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "access_token_key":"XXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "access_token_secret":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+   },
+   "port":"3000"
+}
